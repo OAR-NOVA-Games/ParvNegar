@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Shared domain model and invariants. No I/O, no UI, no cryptography. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ParvNegar.Domain</RootNamespace>
+  </PropertyGroup>
+</Project>

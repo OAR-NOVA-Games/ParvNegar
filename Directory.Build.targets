@@ -1,0 +1,8 @@
+<Project>
+  <!-- Executables and test hosts: the two supported Windows architectures. -->
+  <PropertyGroup Condition="'$(ParvIsExecutable)' == 'true'">
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+    <SelfContained>false</SelfContained>
+    <AppendRuntimeIdentifierToOutputPath>true</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+</Project>
