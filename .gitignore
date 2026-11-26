@@ -1,0 +1,49 @@
+# --- Build output ---
+bin/
+obj/
+artifacts/
+out/
+TestResults/
+*.user
+*.suo
+.vs/
+*.binlog
+*.nupkg
+
+# --- Local tools / scratch ---
+.local/
+.venv/
+venv/
+__pycache__/
+
+# --- Never commit: real data, databases, backups, archives, office documents ---
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+*.pnbk
+*.pnbk.partial
+*.bak
+*.rar
+*.zip
+*.7z
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# --- Never commit: secrets and signing material ---
+secrets/
+*.pfx
+*.p12
+*.snk
+*.pem
+*.key
+*.cer
+*.env
+.env*
+**/scratch-keys/
