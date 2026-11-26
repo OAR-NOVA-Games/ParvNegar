@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+      Light theme. Palette from the approved brand identity board:
+      navy #14233D (primary), teal #13A9A6 (accent), gold #D5A857 (complement), ivory #F6F7F4 (background).
+      Views use DynamicResource with these keys only, so a Dark.xaml with the same keys can be swapped in
+      without structural changes (Dark theme not approved for Phase 1).
+    -->
+    <Color x:Key="Color.Primary">#14233D</Color>
+    <Color x:Key="Color.Accent">#13A9A6</Color>
+    <Color x:Key="Color.Complement">#D5A857</Color>
+    <Color x:Key="Color.Background">#F6F7F4</Color>
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.TextPrimary">#14233D</Color>
+    <Color x:Key="Color.TextSecondary">#4A5568</Color>
+    <Color x:Key="Color.Border">#D9DEE5</Color>
+    <Color x:Key="Color.FocusRing">#0E7C7A</Color>
+
+    <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.Complement" Color="{StaticResource Color.Complement}" />
+    <SolidColorBrush x:Key="Brush.Background" Color="{StaticResource Color.Background}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}" />
+    <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}" />
+    <SolidColorBrush x:Key="Brush.TextOnPrimary" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.FocusRing" Color="{StaticResource Color.FocusRing}" />
+    <SolidColorBrush x:Key="Brush.PrimaryHover" Color="#22375C" />
+    <SolidColorBrush x:Key="Brush.SecondaryHover" Color="#EEF1F4" />
+</ResourceDictionary>

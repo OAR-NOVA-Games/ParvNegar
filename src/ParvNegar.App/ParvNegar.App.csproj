@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- WPF host. Modern = net10.0-windows, Legacy = net48; x86 and x64. Internal development shell. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <ParvIsExecutable>true</ParvIsExecutable>
+    <RootNamespace>ParvNegar.App</RootNamespace>
+    <AssemblyName>ParvNegar</AssemblyName>
+    <ApplicationIcon>Assets\Brand\ParvNegar-AppIcon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>ParvNegar</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ParvNegar.Application\ParvNegar.Application.csproj" />
+    <ProjectReference Include="..\ParvNegar.Domain\ParvNegar.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\*.ttf" />
+    <Resource Include="Assets\Brand\ParvNegar-AppIcon.ico" />
+    <Resource Include="Assets\Brand\ParvNegar-AppIcon-256.png" />
+    <Resource Include="Assets\Brand\ParvNegar-Logo-Horizontal-Transparent.png" />
+    <None Include="Assets\Fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" Link="licenses\Vazirmatn-OFL.txt" />
+    <None Include="Config\school-profile.xml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParvNegar.App.Tests" />
+  </ItemGroup>
+</Project>
