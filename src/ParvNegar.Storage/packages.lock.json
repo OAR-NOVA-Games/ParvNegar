@@ -104,6 +104,13 @@
         }
       }
     },
+    ".NETStandard,Version=v2.0/win-x64": {
+      "SQLite3MC.PCLRaw.lib": {
+        "type": "Transitive",
+        "resolved": "2.7.1",
+        "contentHash": "2qAVDsPXpkjnyWed+WXpCGhL/0Jryx900B7J7ikGTWWZ5YGFGGig0JHz5N8SAB9/7Al+9hmzUU1ivAQxMIU/3A=="
+      }
+    },
     ".NETStandard,Version=v2.0/win-x86": {
       "SQLite3MC.PCLRaw.lib": {
         "type": "Transitive",

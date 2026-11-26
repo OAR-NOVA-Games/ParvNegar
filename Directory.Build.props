@@ -16,6 +16,8 @@
     <RestoreLockedMode Condition="'$(ParvLockedRestore)' == 'true'">true</RestoreLockedMode>
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditMode>all</NuGetAuditMode>
+    <!-- Both supported architectures for every project, so lock files never depend on which RID triggered restore. -->
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
 
     <Company>OAR NOVA Games Studio</Company>
     <Product>ParvNegar</Product>
