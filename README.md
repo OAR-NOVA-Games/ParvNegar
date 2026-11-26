@@ -3,7 +3,7 @@
 Proprietary, fully offline Windows desktop application for structured educational and pastoral student records. Owned and published by OAR NOVA Games Studio.
 
 - Product language: Persian (fa-IR), right-to-left. Engineering language: English.
-- Requirements: [`ParvNegar-SRS-v1.0.md`](ParvNegar-SRS-v1.0.md). Phase reports: [`docs/`](docs/).
+- Requirements: [`docs/requirements/ParvNegar-SRS-v1.0.md`](docs/requirements/ParvNegar-SRS-v1.0.md). Phase reports: [`docs/`](docs/). Brand kit: [`assets/brand-kit/`](assets/brand-kit/).
 - Status: pre-release engineering (Phase 1). Not production software. Nothing is released or deployed from this repository without owner approval.
 
 ## Editions and targets
@@ -18,6 +18,10 @@ Windows 8 (not 8.1): users upgrade to 8.1 (owner decision D-01). Windows 10 1507
 ## Layout
 
 ```
+assets/brand-kit            approved, corrected brand kit (icon, logos, banner, identity board)
+docs/requirements           SRS v1.0 (owner-approved baseline)
+docs/prompts                phase agent prompts
+docs/phase-00, phase-01     phase reports, ADRs, evidence
 src/ParvNegar.Domain        netstandard2.0  entities and invariants (no I/O)
 src/ParvNegar.Application   netstandard2.0  ports (school profile, report renderer, document preview)
 src/ParvNegar.Security      netstandard2.0  HKDF, Argon2id, AES-256-GCM chunk streams, key envelopes, DPAPI device secret

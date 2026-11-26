@@ -5,7 +5,7 @@ Agents implement; the owner decides. These rules apply to every session in this 
 ## Work rules
 
 1. Work phase by phase. Start a phase only after the owner approves its scope. Stop at each review gate.
-2. Read the SRS (`ParvNegar-SRS-v1.0.md`), the latest phase report and `docs/phase-01/DECISION-REGISTER.md` before changing code.
+2. Read the SRS (`docs/requirements/ParvNegar-SRS-v1.0.md`), the latest phase report and `docs/phase-01/DECISION-REGISTER.md` before changing code.
 3. Never treat an Open or Proposed item as approved. Record new owner decisions in the decision register with their date.
 4. English for code, comments, docs, commits and PRs. Persian RTL for every customer-facing string (keep them in `Strings`).
 5. Commit messages: one conventional subject line (`feat: ...`, `fix: ...`, `test: ...`, `docs: ...`, `chore: ...`).
