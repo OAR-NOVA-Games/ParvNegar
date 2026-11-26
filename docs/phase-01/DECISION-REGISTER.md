@@ -33,7 +33,7 @@ Date: 2026-11-26. Continues `docs/phase-00/DECISION-REGISTER.md`. Status: **Appr
 | Remote `origin` = `git@github.com:OAR-NOVA-Games/ParvNegar.git` | Verified empty with `git ls-remote` before any change |
 | Local `main` | One baseline commit (`chore: add requirements baseline, phase 0 documents and brand kit`) |
 | Local `feat/phase-01` | Phase 1 commits on top of `main` |
-| Push | **Not performed.** The agent's `git push -u origin main` was blocked by the session's automatic safety classifier, so nothing has reached the remote. The owner can push with `git push -u origin main` and `git push -u origin feat/phase-01`, or allow the agent to push |
+| Push | Done 2026-11-26: the owner pushed `main` and `feat/phase-01` (the agent push had been blocked by the session safety classifier); later feature-branch pushes by the agent with owner-granted permission |
 | Merge to main | Not done; needs separate owner approval |
 | CI | Not enabled (minutes not approved) |
 

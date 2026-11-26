@@ -16,7 +16,7 @@ Date: 2026-11-26. Phase: 1 (project foundation, architecture, secure storage). B
 - Tests: 114 tests × 4 combinations = 456 executions, 0 failures. The process architecture is asserted in every run.
 - RTL WPF shell with the approved brand assets, embedded Vazirmatn and the exact school title from configuration. Real-window screenshots are in `screenshots/`.
 - **Not yet proven on Windows 7, 8.1 or 10**: no such machines on this host. The compatibility kit is rebuilt (22 MB) and ready for the owner's machines.
-- **Nothing was pushed**: the remote push was blocked by the session's safety classifier. All commits are local (§2).
+- **Pushed**: `main` and `feat/phase-01` are on the private remote (owner pushed on 2026-11-26 after the agent push was blocked by the safety classifier). No pull request or merge yet.
 
 ## 2. Repository and branch status
 
@@ -25,7 +25,7 @@ Date: 2026-11-26. Phase: 1 (project foundation, architecture, secure storage). B
 | Remote | `OAR-NOVA-Games/ParvNegar`, verified empty before work |
 | `main` (local) | `dfc3125` baseline: SRS, Phase 0 prompt, sanitized Phase 0 docs, corrected brand kit, `.gitignore`, `.gitattributes`, README, LICENSE |
 | `feat/phase-01` (local) | Phase 1 commits on top of `main` (conventional one-line messages, author = owner's Git identity, no agent attribution) |
-| Push | Not done (blocked). Owner action: `git push -u origin main` then `git push -u origin feat/phase-01`, or allow the agent to push |
+| Push | Done 2026-11-26 (`main`, `feat/phase-01`) |
 | Merge | Not done; needs separate approval |
 | CI | Not enabled |
 | Uncommitted | none after the final commit; `artifacts/` (test results, interop sets, kit) is ignored |
@@ -98,7 +98,7 @@ Windows 11 x64 (x64 and WOW64 x86, both editions): build, runtime, static and vi
 | ID | Item | Type |
 |---|---|---|
 | R-1 | No runtime evidence on Windows 7 SP1, 8.1, 10 (kit ready; owner machines needed; no Windows 10 machine identified) | Blocker for qualification |
-| R-2 | Remote push blocked; work exists only on this workstation until pushed | Risk (data loss) |
+| R-2 | Resolved: branches pushed to the private remote on 2026-11-26 | Closed |
 | R-3 | PDF/preview on Legacy: Windows 7 natives, PDFium on 8.1, Persian bidi, glyph extraction, searchable PDF, QuestPDF license, physical A4, temp-file leakage | Open (D-06), outside Phase 1 |
 | R-4 | SQLitePCLRaw.core 3.0.2 with Microsoft.Data.Sqlite 10 is a combination proven only by our tests | Risk, gated by tests |
 | R-5 | Low-resource performance (Argon2id x86 ≈ 0.7 s on a fast host; slower on 2 GB/dual-core) | Measure |
@@ -106,7 +106,7 @@ Windows 11 x64 (x64 and WOW64 x86, both editions): build, runtime, static and vi
 
 ## 11. Owner decisions required
 
-1. Push the two branches (or allow the agent to push). Approve CI minutes, or keep local gates only.
+1. Review the Phase 1 pull request (`feat/phase-01` → `main`) and approve or reject the merge. Approve CI minutes, or keep local gates only.
 2. Run the Phase 1 kit on Windows 7 SP1 and 8.1 (x86 and x64 where available). Provide a Windows 10 machine.
 3. O-03 and O-04 (permissions, provisioning, recovery, license term, binding, reissue), plus signing-key custody, password policy and lock timeout: entry gates for Phase 2.
 4. N-01/N-02: official Persian school name and logo; OAR NOVA publisher mark.
