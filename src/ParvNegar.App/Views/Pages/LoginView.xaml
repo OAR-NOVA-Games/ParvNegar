@@ -1,0 +1,27 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+             xmlns:p="clr-namespace:ParvNegar.App.Views.Pages">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <Border Style="{StaticResource Card}" Margin="24" Width="460" MaxWidth="560" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.PageTitle}" Text="{Binding Title}" AutomationProperties.AutomationId="LoginTitle" />
+                <Border Style="{StaticResource Message.Warning}" Visibility="{Binding IsLockScreen, Converter={StaticResource BoolToVisibility}}">
+                    <TextBlock Style="{StaticResource Text.Base}" FontSize="14" Foreground="{DynamicResource Brush.Warning}" Text="{Binding LockMessage}" />
+                </Border>
+                <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.Username}" Target="{Binding ElementName=UserBox}" />
+                <TextBox x:Name="UserBox" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MaxLength="64"
+                         AutomationProperties.Name="{x:Static vm:Strings.Username}" AutomationProperties.AutomationId="Username" />
+                <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.Password}" Target="{Binding ElementName=PwBox}" />
+                <PasswordBox x:Name="PwBox" AutomationProperties.Name="{x:Static vm:Strings.Password}" AutomationProperties.AutomationId="Password" />
+                <CheckBox Margin="0,10,0,0" IsChecked="{Binding Remember}" Content="{x:Static vm:Strings.RememberUsername}" />
+                <p:MessageBanner />
+                <Button x:Name="SignInButton" Style="{StaticResource Button.Primary}" HorizontalAlignment="Stretch" Margin="0,18,0,0" IsDefault="True"
+                        Content="{x:Static vm:Strings.SignIn}" Click="OnSignIn" AutomationProperties.AutomationId="SignIn" />
+                <Button Style="{StaticResource Button.Nav}" HorizontalAlignment="Center" Margin="0,12,0,0" BorderThickness="0" Background="Transparent"
+                        Content="{x:Static vm:Strings.ForgotOwnerPassword}" Command="{Binding RecoverCommand}" />
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

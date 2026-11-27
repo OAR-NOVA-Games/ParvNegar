@@ -17,6 +17,9 @@ namespace ParvNegar.DevTool
     ///   ParvNegar.DevTool interop-produce &lt;dir&gt;   create a synthetic encrypted data set + backup with this edition/arch
     ///   ParvNegar.DevTool interop-consume &lt;dir&gt;   verify a data set produced by any edition/arch
     ///   ParvNegar.DevTool compat &lt;outdir&gt;          run isolated compatibility checks (one child process per check)
+    ///   ParvNegar.DevTool license-signals x           print binding-signal quality and claim-digest prefixes (never raw values)
+    ///   ParvNegar.DevTool license-request &lt;file&gt;    write an activation request for this edition/arch
+    ///   ParvNegar.DevTool license-verify &lt;lic&gt; &lt;anchors&gt;  verify a license offline with this machine's live signals
     /// Exit code = number of failed checks. The keys below are synthetic scratch values for tests only.
     /// </summary>
     public static class Program
@@ -42,6 +45,9 @@ namespace ParvNegar.DevTool
                     case "interop-consume": Interop.Consume(Path.GetFullPath(args[1])); break;
                     case "compat": Compat.Run(Path.GetFullPath(args[1])); break;
                     case "--check": return Compat.RunSingle(args[1], args.Length > 2 ? args[2] : Path.GetTempPath());
+                    case "license-signals": return LicenseInterop.Signals();
+                    case "license-request": return LicenseInterop.Request(Path.GetFullPath(args[1]));
+                    case "license-verify": return LicenseInterop.Verify(Path.GetFullPath(args[1]), Path.GetFullPath(args[2]));
                     default: Console.Error.WriteLine("unknown command"); return 64;
                 }
             }

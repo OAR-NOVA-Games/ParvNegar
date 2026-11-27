@@ -3,24 +3,79 @@ using System.Reflection;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ParvNegar.App.Services;
 using ParvNegar.Application;
 using ParvNegar.Domain;
 
 namespace ParvNegar.App.ViewModels
 {
-    /// <summary>Home shell view model. Shows no student data: authentication and licensing do not exist yet.</summary>
+    /// <summary>
+    /// Main window view model: the branded home screen (no data) and, when a security shell is attached,
+    /// the current gated page. Without a shell (tests, Phase 1 smoke) Start shows the placeholder.
+    /// </summary>
     public sealed class MainViewModel : ObservableObject
     {
         private bool _isHome = true;
+        private readonly string _logoLight, _logoDark;
 
-        public MainViewModel(ISchoolProfileSource profileSource, Action showAbout, Action exit)
+        public MainViewModel(ISchoolProfileSource profileSource, Action showAbout, Action exit, Shell shell = null)
         {
             if (profileSource == null) throw new ArgumentNullException(nameof(profileSource));
             Profile = profileSource.Load();
-            StartCommand = new RelayCommand(() => IsHome = false);
-            BackCommand = new RelayCommand(() => IsHome = true);
+            if (profileSource is XmlSchoolProfileSource xml) { _logoLight = xml.LogoLightSurfacePath; _logoDark = xml.LogoDarkSurfacePath; }
+            Shell = shell;
+            StartCommand = new RelayCommand(Start);
+            BackCommand = new RelayCommand(Back);
             AboutCommand = new RelayCommand(() => showAbout?.Invoke());
             ExitCommand = new RelayCommand(() => exit?.Invoke());
+            if (shell != null) shell.PropertyChanged += (s, e) => { OnPropertyChanged(nameof(CurrentPage)); OnPropertyChanged(nameof(IsHome)); OnPropertyChanged(nameof(IsPlaceholder)); OnPropertyChanged(nameof(HasPage)); };
+            ThemeManager.ThemeChanged += (s, e) => { OnPropertyChanged(nameof(SchoolLogo)); OnPropertyChanged(nameof(IsDarkTheme)); OnPropertyChanged(nameof(IsLightTheme)); };
+        }
+
+        public Shell Shell { get; }
+        public PageViewModel CurrentPage => Shell?.Page;
+        public bool HasPage => Shell != null && Shell.HasPage;
+
+        /// <summary>School logo variant for the current theme (owner originals, never recolored).</summary>
+        public System.Windows.Media.ImageSource SchoolLogo
+        {
+            get
+            {
+                var path = ThemeManager.IsDark ? (_logoDark ?? _logoLight) : (_logoLight ?? _logoDark);
+                if (path == null) return null;
+                try
+                {
+                    var bmp = new System.Windows.Media.Imaging.BitmapImage();
+                    bmp.BeginInit();
+                    bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                    bmp.UriSource = new Uri(path, UriKind.Absolute);
+                    bmp.DecodePixelWidth = 320;
+                    bmp.EndInit();
+                    bmp.Freeze();
+                    return bmp;
+                }
+                catch (Exception ex) when (ex is System.IO.IOException || ex is NotSupportedException || ex is UriFormatException) { return null; }
+            }
+        }
+
+        public bool IsDarkTheme => ThemeManager.IsDark;
+        public bool IsLightTheme => !ThemeManager.IsDark;
+
+        public bool HasSchoolLogo => (_logoLight ?? _logoDark) != null;
+
+        private void Start()
+        {
+            if (Shell == null) { IsHome = false; return; }
+            Shell.NavigateForState();
+        }
+
+        private void Back()
+        {
+            if (Shell == null) { IsHome = true; return; }
+            // Escape never leaves a signed-in workspace (it would only hide it, not lock it).
+            if (Shell.Security.HasSession) return;
+            if (Shell.Page is RecoveryPageViewModel r && !r.DeviceLost) { Shell.NavigateForState(); return; }
+            Shell.Home();
         }
 
         public SchoolProfile Profile { get; }
@@ -38,11 +93,11 @@ namespace ParvNegar.App.ViewModels
 
         public bool IsHome
         {
-            get => _isHome;
+            get => Shell == null ? _isHome : !Shell.HasPage;
             set { if (SetProperty(ref _isHome, value)) OnPropertyChanged(nameof(IsPlaceholder)); }
         }
 
-        public bool IsPlaceholder => !_isHome;
+        public bool IsPlaceholder => Shell == null && !_isHome;
 
         public ICommand StartCommand { get; }
         public ICommand BackCommand { get; }
@@ -54,31 +109,5 @@ namespace ParvNegar.App.ViewModels
             var v = typeof(MainViewModel).Assembly.GetName().Version;
             return v.Major + "." + v.Minor + "." + v.Build;
         }
-    }
-
-    /// <summary>Customer-facing Persian strings (single place for review and future localization).</summary>
-    public static class Strings
-    {
-        public const string WindowTitle = "پرونگار";
-        public const string Tagline = "سامانه مدیریت پرونده‌های دانش‌آموزی";
-        public const string Start = "شروع";
-        public const string About = "درباره";
-        public const string Exit = "خروج";
-        public const string Back = "بازگشت";
-        public const string Close = "بستن";
-        public const string ProfileMissing = "پیکربندی مدرسه یافت نشد.";
-        public const string DevNotice = "نسخه توسعه؛ فقط برای آزمایش و بدون داده واقعی دانش‌آموزان";
-        public const string PlaceholderTitle = "بخش‌های برنامه در حال آماده‌سازی است";
-        public const string PlaceholderBody = "در این نسخه توسعه، ورود کاربران، مجوز نرم‌افزار و پرونده دانش‌آموزان هنوز فعال نیست.";
-        public const string PublisherPrefix = "محصولی از";
-        public const string VersionPrefix = "نسخه";
-        public const string DevSuffix = "(توسعه)";
-        public const string AboutTitle = "درباره پرونگار";
-        public const string AboutPublisher = "ناشر";
-        public const string AboutDistribution = "توزیع";
-        public const string AboutSchool = "مدرسه";
-        public const string AboutCopyright = "© ۲۰۲۶؛ تمامی حقوق برای OAR NOVA Games Studio محفوظ است.";
-        public const string AboutFont = "قلم وزیرمتن با مجوز آزاد SIL Open Font License (نسخه ۱٫۱)";
-        public const string AboutOffline = "این نرم‌افزار بدون نیاز به اینترنت کار می‌کند.";
     }
 }

@@ -47,7 +47,7 @@ namespace ParvNegar.Issuer
             if ((env == TrustEnvironment.Production) != prodKid) throw new ArgumentException("Production keys and only production keys use the pn-prod- prefix.");
             if (passphrase == null || passphrase.Length < 20) throw new ArgumentException("Signing-key passphrase must be at least 20 bytes.");
             var gen = new ECKeyPairGenerator();
-            gen.Init(new ECKeyGenerationParameters(EcdsaP256.Domain, new SecureRandom()));
+            gen.Init(new ECKeyGenerationParameters(Org.BouncyCastle.Asn1.Sec.SecObjectIdentifiers.SecP256r1, new SecureRandom())); // SPKI carries the named-curve OID
             var pair = gen.GenerateKeyPair();
             var spki = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(pair.Public).GetDerEncoded();
             var pkcs8 = PrivateKeyInfoFactory.CreatePrivateKeyInfo(pair.Private).GetDerEncoded();

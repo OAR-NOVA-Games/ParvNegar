@@ -51,6 +51,13 @@
       "parvnegar.domain": {
         "type": "Project"
       },
+      "parvnegar.licensing": {
+        "type": "Project",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "[2.7.0, 2.7.0]",
+          "ParvNegar.Security": "[0.1.0-dev, )"
+        }
+      },
       "parvnegar.security": {
         "type": "Project",
         "dependencies": {
@@ -133,6 +140,13 @@
       },
       "parvnegar.domain": {
         "type": "Project"
+      },
+      "parvnegar.licensing": {
+        "type": "Project",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "[2.7.0, 2.7.0]",
+          "ParvNegar.Security": "[0.1.0-dev, )"
+        }
       },
       "parvnegar.security": {
         "type": "Project",

@@ -34,6 +34,17 @@
                 <TextBlock Grid.Row="2" Style="{StaticResource Text.Small}" FontWeight="Medium" Text="{x:Static vm:Strings.AboutSchool}" Margin="0,0,16,6" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Text.Small}" Text="{Binding SchoolName}" />
             </Grid>
+            <!-- Publisher mark: owner-supplied white mark on brand navy (assets/publisher/README.md). -->
+            <Border Background="#14233D" CornerRadius="10" Padding="12,8" Margin="0,14,0,0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="PublisherMark" Width="56" Height="56" RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="OAR NOVA Games Studio">
+                        <Image.Source>
+                            <BitmapImage UriSource="pack://application:,,,/ParvNegar;component/Assets/Publisher/OAR-NOVA-Games-Logo-White.png" DecodePixelWidth="160" CacheOption="OnLoad" />
+                        </Image.Source>
+                    </Image>
+                    <TextBlock Text="OAR NOVA Games Studio" Foreground="#FFFFFF" FontSize="15" FontWeight="Medium" VerticalAlignment="Center" Margin="12,0,0,0" FlowDirection="LeftToRight" />
+                </StackPanel>
+            </Border>
             <TextBlock Style="{StaticResource Text.Small}" Margin="0,14,0,0" Text="{x:Static vm:Strings.AboutOffline}" />
             <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,0" Text="{x:Static vm:Strings.AboutFont}" />
             <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,0" Text="{x:Static vm:Strings.AboutCopyright}" />

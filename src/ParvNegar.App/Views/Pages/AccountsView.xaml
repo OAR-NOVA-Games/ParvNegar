@@ -1,0 +1,83 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+             xmlns:p="clr-namespace:ParvNegar.App.Views.Pages">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <StackPanel Margin="24" MaxWidth="980">
+            <TextBlock Style="{StaticResource Text.PageTitle}" Text="{x:Static vm:Strings.AccountsTitle}" />
+            <TextBlock Style="{StaticResource Text.Body}" Text="{x:Static vm:Strings.AccountsIntro}" />
+            <p:MessageBanner />
+            <WrapPanel Margin="0,12,0,0">
+                <!-- Account list -->
+                <Border Style="{StaticResource Card}" Width="360" Margin="0,0,16,16" Padding="12" VerticalAlignment="Top">
+                    <ListBox x:Name="AccountList" ItemsSource="{Binding Accounts}" SelectedItem="{Binding Selected}" MinHeight="180" BorderThickness="0"
+                             AutomationProperties.Name="{x:Static vm:Strings.AccountsTitle}" AutomationProperties.AutomationId="AccountList">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="4,6">
+                                    <TextBlock Style="{StaticResource Text.Base}" FontWeight="Medium" Text="{Binding DisplayName}" />
+                                    <TextBlock Style="{StaticResource Text.Small}">
+                                        <Run Text="{Binding Username, Mode=OneWay}" FlowDirection="LeftToRight" /> <Run Text=" · " /> <Run Text="{Binding Role, Mode=OneWay}" /> <Run Text=" · " /> <Run Text="{Binding Status, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+
+                <!-- Selected account -->
+                <Border Style="{StaticResource Card}" Width="400" Margin="0,0,16,16" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Body}" Text="{x:Static vm:Strings.SelectAccount}"
+                                   Visibility="{Binding HasSelection, Converter={StaticResource InverseBoolToVisibility}}" />
+                        <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Style="{StaticResource Text.Section}" Margin="0" Text="{Binding Selected.DisplayName}" />
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding Selected.Status}" />
+                            <StackPanel Visibility="{Binding SelectedIsDelegate, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock Style="{StaticResource Text.Section}" Text="دسترسی‌ها" />
+                                <ItemsControl ItemsSource="{Binding PermissionItems}" Focusable="False" AutomationProperties.AutomationId="PermissionList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Name}" IsChecked="{Binding Granted}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Left" Margin="0,10,0,0" Content="{x:Static vm:Strings.SavePermissions}"
+                                        Command="{Binding SavePermissionsCommand}" AutomationProperties.AutomationId="SavePermissions" />
+                                <TextBlock Style="{StaticResource Text.Section}" Text="{x:Static vm:Strings.ResetPassword}" />
+                                <PasswordBox x:Name="ResetPw1" AutomationProperties.Name="{x:Static vm:Strings.TemporaryPassword}" />
+                                <PasswordBox x:Name="ResetPw2" Margin="0,6,0,0" AutomationProperties.Name="{x:Static vm:Strings.RepeatPassword}" />
+                                <Button Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Margin="0,8,0,0" Content="{x:Static vm:Strings.ResetPassword}" Click="OnReset" />
+                            </StackPanel>
+                            <WrapPanel Margin="0,16,0,0">
+                                <Button Style="{StaticResource Button.Secondary}" Margin="0,0,8,8" Content="{x:Static vm:Strings.Disable}" Command="{Binding DisableCommand}" />
+                                <Button Style="{StaticResource Button.Secondary}" Margin="0,0,8,8" Content="{x:Static vm:Strings.Enable}" Command="{Binding EnableCommand}" />
+                                <Button Style="{StaticResource Button.Danger}" Margin="0,0,8,8" Content="{x:Static vm:Strings.Delete}" Command="{Binding DeleteCommand}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- New delegate -->
+                <Border Style="{StaticResource Card}" Width="360" Margin="0,0,16,16" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Section}" Margin="0" Text="{x:Static vm:Strings.NewDelegate}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.Username}" Target="{Binding ElementName=NewUser}" />
+                        <TextBox x:Name="NewUser" Text="{Binding NewUsername, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" MaxLength="32" AutomationProperties.Name="{x:Static vm:Strings.Username}" AutomationProperties.AutomationId="NewUsername" />
+                        <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,0" Text="{x:Static vm:Strings.UsernameRule}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.DisplayName}" Target="{Binding ElementName=NewName}" />
+                        <TextBox x:Name="NewName" Text="{Binding NewDisplayName, UpdateSourceTrigger=PropertyChanged}" MaxLength="80" AutomationProperties.Name="{x:Static vm:Strings.DisplayName}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.TemporaryPassword}" Target="{Binding ElementName=NewPw1}" />
+                        <PasswordBox x:Name="NewPw1" AutomationProperties.Name="{x:Static vm:Strings.TemporaryPassword}" AutomationProperties.AutomationId="NewTempPassword" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.RepeatPassword}" Target="{Binding ElementName=NewPw2}" />
+                        <PasswordBox x:Name="NewPw2" AutomationProperties.Name="{x:Static vm:Strings.RepeatPassword}" />
+                        <TextBlock Style="{StaticResource Text.Small}" Margin="0,6,0,0" Text="{x:Static vm:Strings.TemporaryPasswordHint}" />
+                        <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Left" Margin="0,12,0,0" Content="{x:Static vm:Strings.CreateAccount}" Click="OnCreate"
+                                AutomationProperties.AutomationId="CreateAccount" />
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

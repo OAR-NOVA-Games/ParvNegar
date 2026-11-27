@@ -47,6 +47,44 @@ foreach ($p in $builds) {
     }
 }
 
+# ---- Licensing (Phase 2): every build must read the same binding claims, and a license issued for a
+# request made by one build must verify in all four. Ephemeral TEST signing key created for this run only.
+$issuer = Get-ChildItem (Join-Path $root "tools\ParvNegar.Issuer\bin\$Configuration") -Recurse -Filter ParvNegar.Issuer.exe | Select-Object -First 1
+if (-not $issuer) { throw "Missing issuer build (dotnet build tools\ParvNegar.Issuer)" }
+$lic = Join-Path $OutDir "licensing"
+New-Item -ItemType Directory -Force $lic | Out-Null
+$claimsSeen = @{}
+foreach ($b in $builds) {
+    $exe = Join-Path $root $b.Path
+    $sig = & $exe license-signals x
+    $claimLine = ($sig | Where-Object { $_ -like "CLAIMS*" }) -replace "^CLAIMS\t[^\t]+\t", ""
+    $claimsSeen[$b.Name] = $claimLine
+    $ok = $LASTEXITCODE -eq 0
+    if (-not $ok) { $failures++ }
+    $lines.Add("$($b.Name)`t-`tLICENSE_SIGNALS`t$(if ($ok) {'PASS'} else {'FAIL'})`t$(($sig | Where-Object { $_ -like 'SIGNALS*' }) -replace '^SIGNALS\t[^\t]+\t','')")
+}
+$distinct = @($claimsSeen.Values | Sort-Object -Unique)
+if ($distinct.Count -ne 1) { $failures++; $lines.Add("all`t-`tLICENSE_CLAIMS_IDENTICAL`tFAIL`t$($distinct -join ' | ')") }
+else { $lines.Add("all`t-`tLICENSE_CLAIMS_IDENTICAL`tPASS`tdigest prefixes $($distinct[0])") }
+
+$env:PARVNEGAR_SIGNING_PASSPHRASE = [Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Maximum 256) }))
+& $issuer.FullName keygen --kid pn-test-crossedition --environment test --out (Join-Path $lic "test.pnsk") --trust-out (Join-Path $lic "test-anchors.json") | Out-Null
+foreach ($p in $builds) {
+    $req = Join-Path $lic "$($p.Name).pnreq"
+    & (Join-Path $root $p.Path) license-request $req | Out-Null
+    $licFile = Join-Path $lic "$($p.Name).pnlic"
+    & $issuer.FullName issue --request $req --key (Join-Path $lic "test.pnsk") --customer-ref crossedition-test --out $licFile | Out-Null
+    if ($LASTEXITCODE -ne 0) { $failures++; $lines.Add("$($p.Name)`t-`tLICENSE_ISSUE`tFAIL`texit=$LASTEXITCODE"); continue }
+    foreach ($c in $builds) {
+        $v = & (Join-Path $root $c.Path) license-verify $licFile (Join-Path $lic "test-anchors.json")
+        $ok = $LASTEXITCODE -eq 0
+        if (-not $ok) { $failures++ }
+        $lines.Add("$($p.Name)`t$($c.Name)`tLICENSE_VERIFY`t$(if ($ok) {'PASS'} else {'FAIL'})`t$(($v -replace '^LICENSE\t[^\t]+\t',''))")
+    }
+}
+Remove-Item Env:\PARVNEGAR_SIGNING_PASSPHRASE
+Remove-Item (Join-Path $lic "test.pnsk") -Force   # the ephemeral test key does not outlive the run
+
 $tsv = Join-Path $OutDir "cross-edition-matrix.tsv"
 [System.IO.File]::WriteAllLines($tsv, $lines, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "Matrix: $tsv"

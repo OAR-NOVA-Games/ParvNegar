@@ -1,0 +1,15 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.InvalidInstallationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <Border Style="{StaticResource Card}" Margin="24" MaxWidth="600" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.PageTitle}" Text="{x:Static vm:Strings.InvalidTitle}" />
+                <Border Style="{StaticResource Message.Error}">
+                    <TextBlock Style="{StaticResource Text.Base}" FontSize="14" Foreground="{DynamicResource Brush.Error}" Text="{x:Static vm:Strings.InvalidBody}" />
+                </Border>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

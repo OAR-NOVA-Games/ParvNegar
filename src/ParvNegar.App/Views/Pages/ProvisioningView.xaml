@@ -1,0 +1,17 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.ProvisioningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+             xmlns:p="clr-namespace:ParvNegar.App.Views.Pages">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <Border Style="{StaticResource Card}" Margin="24" MaxWidth="620" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.PageTitle}" Text="{x:Static vm:Strings.ProvisioningTitle}" />
+                <TextBlock Style="{StaticResource Text.Body}" Text="{x:Static vm:Strings.ProvisioningIntro}" />
+                <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Left" Margin="0,18,0,0" Content="{x:Static vm:Strings.ImportProvisioning}"
+                        Command="{Binding ImportCommand}" AutomationProperties.AutomationId="ImportProvisioning" />
+                <p:MessageBanner />
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

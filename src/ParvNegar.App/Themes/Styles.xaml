@@ -4,6 +4,7 @@
 
     <!-- Embedded Vazirmatn (SIL OFL 1.1). No dependency on fonts installed on the PC. -->
     <FontFamily x:Key="Font.Ui">pack://application:,,,/ParvNegar;component/Assets/Fonts/#Vazirmatn</FontFamily>
+    <FontFamily x:Key="Font.Code">Consolas, Courier New</FontFamily>
 
     <Style x:Key="FocusVisual.Ring">
         <Setter Property="Control.Template">
@@ -16,6 +17,7 @@
         </Setter>
     </Style>
 
+    <!-- Text -->
     <Style x:Key="Text.Base" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
@@ -27,23 +29,61 @@
         <Setter Property="LineHeight" Value="44" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>
+    <Style x:Key="Text.PageTitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+    <Style x:Key="Text.Section" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="0,14,0,6" />
+    </Style>
     <Style x:Key="Text.Subtitle" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>
+    <Style x:Key="Text.Body" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="14.5" />
+        <Setter Property="LineHeight" Value="26" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+    </Style>
     <Style x:Key="Text.Small" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
         <Setter Property="FontSize" Value="12.5" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
     </Style>
+    <Style x:Key="Text.Label" TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Padding" Value="0,10,0,4" />
+    </Style>
+    <!-- Secret codes (recovery key, request confirmation): left-to-right, monospaced, selectable. -->
+    <Style x:Key="Text.Code" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Code}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="FlowDirection" Value="LeftToRight" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Code}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12" />
+    </Style>
 
+    <!-- Buttons -->
     <Style x:Key="Button.Base" TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="MinWidth" Value="180" />
-        <Setter Property="MinHeight" Value="48" />
-        <Setter Property="Padding" Value="24,8" />
+        <Setter Property="MinWidth" Value="150" />
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="20,6" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Ring}" />
         <Setter Property="Template">
@@ -56,17 +96,20 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Bd" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.FocusRing}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-
     <Style x:Key="Button.Primary" TargetType="Button" BasedOn="{StaticResource Button.Base}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Primary}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextOnPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.PrimaryButton}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.PrimaryButtonText}" />
         <Setter Property="BorderThickness" Value="0" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -74,7 +117,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
     <Style x:Key="Button.Secondary" TargetType="Button" BasedOn="{StaticResource Button.Base}">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
@@ -86,12 +128,107 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="Button.Danger" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Error}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Error}" />
+    </Style>
+    <Style x:Key="Button.Nav" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="14,4" />
+        <Setter Property="Margin" Value="4,0" />
+    </Style>
 
+    <!-- Inputs -->
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Brush.InputBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.InputBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.FocusRing}" />
+                <Setter Property="BorderThickness" Value="2" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="PasswordBox">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Brush.InputBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.InputBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="MaxLength" Value="256" />
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.FocusRing}" />
+                <Setter Property="BorderThickness" Value="2" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Margin" Value="0,4" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Ring}" />
+    </Style>
+    <Style TargetType="RadioButton">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Margin" Value="0,4,18,4" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Ring}" />
+    </Style>
+    <Style TargetType="ListBox">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    </Style>
+    <Style TargetType="ToolTip">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    </Style>
+
+    <!-- Surfaces and messages -->
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="14" />
-        <Setter Property="Padding" Value="32,28" />
+        <Setter Property="Padding" Value="28,24" />
+    </Style>
+    <Style x:Key="Message.Error" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Brush.ErrorSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Error}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="Margin" Value="0,12,0,0" />
+    </Style>
+    <Style x:Key="Message.Success" TargetType="Border" BasedOn="{StaticResource Message.Error}">
+        <Setter Property="Background" Value="{DynamicResource Brush.SuccessSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Success}" />
+    </Style>
+    <Style x:Key="Message.Warning" TargetType="Border" BasedOn="{StaticResource Message.Error}">
+        <Setter Property="Background" Value="{DynamicResource Brush.WarningSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Warning}" />
     </Style>
 </ResourceDictionary>

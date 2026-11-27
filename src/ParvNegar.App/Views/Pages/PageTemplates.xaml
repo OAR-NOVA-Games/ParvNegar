@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+                    xmlns:p="clr-namespace:ParvNegar.App.Views.Pages">
+    <!-- One view per page view model. -->
+    <DataTemplate DataType="{x:Type vm:LicensePageViewModel}"><p:LicenseView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ProvisioningPageViewModel}"><p:ProvisioningView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SetupPageViewModel}"><p:SetupView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:RecoveryKeyPageViewModel}"><p:RecoveryKeyView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:LoginPageViewModel}"><p:LoginView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ChangePasswordPageViewModel}"><p:ChangePasswordView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:RecoveryPageViewModel}"><p:RecoveryView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:InvalidInstallationPageViewModel}"><p:InvalidInstallationView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:WorkspacePageViewModel}"><p:WorkspaceView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:DashboardViewModel}"><p:DashboardView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AccountsViewModel}"><p:AccountsView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SecurityViewModel}"><p:SecurityView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><p:SettingsView /></DataTemplate>
+</ResourceDictionary>

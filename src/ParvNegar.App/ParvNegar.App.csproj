@@ -32,6 +32,23 @@
     <Resource Include="$(PublisherAssetsDir)OAR-NOVA-Games-Logo-White.png" Link="Assets\Publisher\OAR-NOVA-Games-Logo-White.png" />
     <None Include="Assets\Fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" Link="licenses\Vazirmatn-OFL.txt" />
     <None Include="Config\school-profile.xml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Config\school\*.png" CopyToOutputDirectory="PreserveNewest" Link="Config\school\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!--
+    Trust anchors (LICENSING-ARCHITECTURE.md §4). Exactly one profile is embedded per build:
+    Development (default; trusts development keys only) or Production (-p:ParvTrustProfile=Production;
+    trusts production keys only). Production.json stays empty until the owner-approved key ceremony.
+  -->
+  <PropertyGroup>
+    <ParvTrustProfile Condition="'$(ParvTrustProfile)' == ''">Development</ParvTrustProfile>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\trust\$(ParvTrustProfile).json" LogicalName="ParvNegar.trust-anchors.json" />
+    <AssemblyMetadata Include="ParvTrustProfile" Value="$(ParvTrustProfile)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ParvNegar.Licensing\ParvNegar.Licensing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

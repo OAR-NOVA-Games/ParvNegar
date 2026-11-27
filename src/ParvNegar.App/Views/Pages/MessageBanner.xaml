@@ -1,0 +1,16 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.MessageBanner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False">
+    <!-- Error/success message of the current page (DataContext = PageViewModel). -->
+    <StackPanel>
+        <Border Style="{StaticResource Message.Error}" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock x:Name="ErrorText" Style="{StaticResource Text.Base}" FontSize="14" Foreground="{DynamicResource Brush.Error}" Text="{Binding Message}"
+                       AutomationProperties.Name="{Binding Message}" />
+        </Border>
+        <Border Style="{StaticResource Message.Success}" Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Style="{StaticResource Text.Base}" FontSize="14" Foreground="{DynamicResource Brush.Success}" Text="{Binding Message}"
+                       AutomationProperties.Name="{Binding Message}" />
+        </Border>
+    </StackPanel>
+</UserControl>

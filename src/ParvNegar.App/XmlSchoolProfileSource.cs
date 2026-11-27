@@ -21,6 +21,22 @@ namespace ParvNegar.App
         public static XmlSchoolProfileSource Default() =>
             new XmlSchoolProfileSource(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "school-profile.xml"));
 
+        /// <summary>Full path of the school logo for light backgrounds (dark lettering), or null.</summary>
+        public string LogoLightSurfacePath { get; private set; }
+
+        /// <summary>Full path of the school logo for dark backgrounds (white lettering), or null.</summary>
+        public string LogoDarkSurfacePath { get; private set; }
+
+        /// <summary>Logo files must be PNG files inside the configuration folder (no absolute paths, no "..").</summary>
+        private string SafeAsset(string relative)
+        {
+            if (string.IsNullOrWhiteSpace(relative)) return null;
+            var baseDir = Path.GetFullPath(Path.GetDirectoryName(_path)) + Path.DirectorySeparatorChar;
+            var full = Path.GetFullPath(Path.Combine(baseDir, relative.Trim()));
+            if (!full.StartsWith(baseDir, StringComparison.OrdinalIgnoreCase) || !full.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || !File.Exists(full)) return null;
+            return full;
+        }
+
         public SchoolProfile Load()
         {
             try
@@ -36,6 +52,8 @@ namespace ParvNegar.App
                     var name = (string)root.Element("SchoolName");
                     var title = (string)root.Element("HomeTitle");
                     var logo = (string)root.Element("LogoAssetId");
+                    LogoLightSurfacePath = SafeAsset((string)root.Element("LogoLightSurface"));
+                    LogoDarkSurfacePath = SafeAsset((string)root.Element("LogoDarkSurface"));
                     return new SchoolProfile(id, name, title, logo);
                 }
             }

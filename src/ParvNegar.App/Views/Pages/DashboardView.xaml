@@ -1,0 +1,26 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <Border Style="{StaticResource Card}" Margin="24" MaxWidth="760" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.PageTitle}" Text="{Binding Welcome}" AutomationProperties.AutomationId="Welcome" />
+                <TextBlock Style="{StaticResource Text.Body}" Text="{x:Static vm:Strings.WorkspaceEmpty}" />
+                <TextBlock Style="{StaticResource Text.Section}" Text="دسترسی‌های شما" />
+                <TextBlock Style="{StaticResource Text.Body}" Text="مالک به همه بخش‌ها دسترسی دارد."
+                           Visibility="{Binding Workspace.IsOwner, Converter={StaticResource BoolToVisibility}}" />
+                <ItemsControl ItemsSource="{Binding Workspace.Permissions}" Focusable="False">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,4,8,4" Padding="10,4" CornerRadius="12" Background="{DynamicResource Brush.SurfaceAlt}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                                <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextPrimary}" Text="{Binding}" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

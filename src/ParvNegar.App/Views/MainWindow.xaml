@@ -23,29 +23,42 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header: product identity. In RTL, Dock="Left" is the visual start (right side). -->
-        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="28,12">
-            <!-- Columns instead of docking: on a narrow work area the notice wraps instead of overlapping the logo. -->
+        <!-- Header: product identity. Light: approved horizontal logo. Dark: approved app icon + product name
+             (the brand kit has no product logo for dark surfaces; logos are never recolored). -->
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Header}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="28,12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" MinWidth="0" />
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" x:Name="ProductLogo" Height="56" RenderOptions.BitmapScalingMode="HighQuality"
-                       Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-Logo-Horizontal-Transparent.png"
-                       AutomationProperties.Name="پرونگار" />
+                <Grid Grid.Column="0">
+                    <Image x:Name="ProductLogo" Height="56" RenderOptions.BitmapScalingMode="HighQuality"
+                           Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-Logo-Horizontal-Transparent.png"
+                           Visibility="{Binding IsLightTheme, Converter={StaticResource BoolToVisibility}}" AutomationProperties.Name="پرونگار" />
+                    <StackPanel x:Name="ProductMarkDark" Orientation="Horizontal" Height="56" Visibility="{Binding IsDarkTheme, Converter={StaticResource BoolToVisibility}}">
+                        <Image Width="48" Height="48" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"
+                               Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon-256.png" AutomationProperties.Name="پرونگار" />
+                        <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                            <TextBlock Style="{StaticResource Text.Base}" FontSize="22" FontWeight="Bold" Text="{Binding ProductName}" />
+                            <TextBlock Style="{StaticResource Text.Small}" Text="{Binding Tagline}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
                 <TextBlock Grid.Column="1" x:Name="DevNoticeText" Style="{StaticResource Text.Small}" VerticalAlignment="Center" Margin="16,0,0,0"
                            HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="Wrap"
                            Text="{Binding DevNotice}" Foreground="{DynamicResource Brush.Complement}" FontWeight="Medium" />
             </Grid>
         </Border>
 
-        <!-- Home -->
+        <!-- Home: school identity only, no data. -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False"
                       Visibility="{Binding IsHome, Converter={StaticResource BoolToVisibility}}">
             <Grid Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="820">
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
+                        <Image x:Name="SchoolLogo" Source="{Binding SchoolLogo}" Height="112" Margin="0,0,0,12" HorizontalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality" Visibility="{Binding HasSchoolLogo, Converter={StaticResource BoolToVisibility}}"
+                               AutomationProperties.Name="{Binding SchoolName}" AutomationProperties.AutomationId="SchoolLogo" />
                         <Border Height="4" Width="72" CornerRadius="2" Background="{DynamicResource Brush.Accent}" HorizontalAlignment="Center" Margin="0,0,0,18" />
                         <TextBlock x:Name="HomeTitleText" Style="{StaticResource Text.Title}" Text="{Binding HomeTitle, Mode=OneTime}"
                                    AutomationProperties.AutomationId="HomeTitle" />
@@ -53,7 +66,7 @@
                         <!-- WrapPanel: buttons move to a new line on a narrow work area instead of being cut off. -->
                         <WrapPanel x:Name="HomeActions" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,26,0,0" KeyboardNavigation.TabNavigation="Cycle">
                             <Button x:Name="StartButton" Style="{StaticResource Button.Primary}" Content="{x:Static vm:Strings.Start}" Margin="6"
-                                    Command="{Binding StartCommand}" TabIndex="0" IsDefault="True" AutomationProperties.AutomationId="Start" />
+                                    Command="{Binding StartCommand}" TabIndex="0" IsDefault="{Binding IsHome}" AutomationProperties.AutomationId="Start" />
                             <Button x:Name="AboutButton" Style="{StaticResource Button.Secondary}" Content="{x:Static vm:Strings.About}" Margin="6"
                                     Command="{Binding AboutCommand}" TabIndex="1" AutomationProperties.AutomationId="About" />
                             <Button x:Name="ExitButton" Style="{StaticResource Button.Secondary}" Content="{x:Static vm:Strings.Exit}" Margin="6"
@@ -64,7 +77,7 @@
             </Grid>
         </ScrollViewer>
 
-        <!-- Placeholder after Start (no data, no login yet) -->
+        <!-- Placeholder (only without a security shell: tests and the Phase 1 smoke path) -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False"
                       Visibility="{Binding IsPlaceholder, Converter={StaticResource BoolToVisibility}}">
             <Border Style="{StaticResource Card}" Margin="24" MaxWidth="720" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -77,19 +90,30 @@
             </Border>
         </ScrollViewer>
 
+        <!-- Gated pages: license, setup, login, workspace ... -->
+        <ContentControl Grid.Row="1" x:Name="PageHost" Content="{Binding CurrentPage}" Focusable="False" IsTabStop="False"
+                        Visibility="{Binding HasPage, Converter={StaticResource BoolToVisibility}}" />
+
         <!-- Footer: school and publisher identities, kept separate -->
-        <Border Grid.Row="2" Background="{DynamicResource Brush.Primary}" Padding="28,10">
+        <Border Grid.Row="2" Background="{DynamicResource Brush.Footer}" Padding="28,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="0" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" x:Name="FooterSchool" Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}"
+                <TextBlock Grid.Column="0" x:Name="FooterSchool" Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.FooterText}"
                            Text="{Binding SchoolName}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
                 <StackPanel Grid.Column="1" x:Name="FooterPublisher" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}" Text="{Binding VersionText}" />
-                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.Complement}" Text="  •  " />
-                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}" Text="{Binding PublisherLine}" />
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.FooterText}" VerticalAlignment="Center" Text="{Binding VersionText}" />
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.FooterAccent}" VerticalAlignment="Center" Text="  •  " />
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.FooterText}" VerticalAlignment="Center" Text="{Binding PublisherLine}" />
+                    <!-- Owner-supplied white OAR NOVA mark; the footer is navy in both themes. -->
+                    <Image x:Name="PublisherMark" Width="30" Height="30" Margin="10,0,0,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"
+                           AutomationProperties.Name="OAR NOVA Games Studio">
+                        <Image.Source>
+                            <BitmapImage UriSource="pack://application:,,,/ParvNegar;component/Assets/Publisher/OAR-NOVA-Games-Logo-White.png" DecodePixelWidth="96" CacheOption="OnLoad" />
+                        </Image.Source>
+                    </Image>
                 </StackPanel>
             </Grid>
         </Border>

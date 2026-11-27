@@ -12,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ParvNegar.Storage\ParvNegar.Storage.csproj" />
     <ProjectReference Include="..\..\src\ParvNegar.Domain\ParvNegar.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ParvNegar.Licensing\ParvNegar.Licensing.csproj" />
   </ItemGroup>
 </Project>

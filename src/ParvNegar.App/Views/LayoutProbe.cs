@@ -83,7 +83,12 @@ namespace ParvNegar.App.Views
             const double tol = 0.5;
             if (b.Left < -tol || b.Right > container.ActualWidth + tol)
                 problems.Add(name + " cut horizontally (" + Fmt(b) + " in width " + container.ActualWidth.ToString("F0", CultureInfo.InvariantCulture) + ")");
-            if (vertical && (b.Top < -tol || b.Bottom > container.ActualHeight + tol))
+            // An element taller than its scroll viewport cannot be fully visible at once; it is reachable when
+            // scrolling brings its top into view and the viewer can scroll over its whole height.
+            bool tallInViewer = container is ScrollViewer sv && b.Height > container.ActualHeight && sv.ExtentHeight >= b.Height;
+            if (vertical && tallInViewer && (b.Top < -tol || b.Top > container.ActualHeight))
+                problems.Add(name + " not reachable vertically (" + Fmt(b) + " in height " + container.ActualHeight.ToString("F0", CultureInfo.InvariantCulture) + ")");
+            else if (vertical && !tallInViewer && (b.Top < -tol || b.Bottom > container.ActualHeight + tol))
                 problems.Add(name + " not reachable vertically (" + Fmt(b) + " in height " + container.ActualHeight.ToString("F0", CultureInfo.InvariantCulture) + ")");
             if (e.ActualWidth < 1 || e.ActualHeight < 1) problems.Add(name + " has no visible size");
         }

@@ -20,6 +20,19 @@ namespace ParvNegar.App
     /// </summary>
     internal static class SmokeRunner
     {
+        /// <summary>
+        /// Smoke runs never touch the real installation: they always use a synthetic data root inside the
+        /// smoke output folder, and they go through the normal license and login gates (no bypass).
+        /// </summary>
+        public static ParvNegar.Application.Security.InstallationPaths SyntheticRoot(string smokeDir)
+        {
+            var root = Path.GetFullPath(Path.Combine(smokeDir, "synthetic-root"));
+            var real = ParvNegar.Application.Security.InstallationPaths.Default().Root;
+            if (root.StartsWith(real, StringComparison.OrdinalIgnoreCase) || real.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Smoke output must not overlap the real data folder.");
+            return new ParvNegar.Application.Security.InstallationPaths(root);
+        }
+
         public static string ParseSmokeArgument(string[] args)
         {
             for (int i = 0; i < args.Length - 1; i++)

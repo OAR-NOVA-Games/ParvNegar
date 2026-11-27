@@ -1,0 +1,62 @@
+<UserControl x:Class="ParvNegar.App.Views.Pages.SecurityView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+             xmlns:p="clr-namespace:ParvNegar.App.Views.Pages">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <StackPanel Margin="24" MaxWidth="980">
+            <TextBlock Style="{StaticResource Text.PageTitle}" Text="{x:Static vm:Strings.SecurityTitle}" />
+            <p:MessageBanner />
+            <WrapPanel Margin="0,12,0,0">
+                <Border Style="{StaticResource Card}" Width="400" Margin="0,0,16,16" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Section}" Margin="0" Text="{x:Static vm:Strings.ChangePasswordTitle}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.CurrentPassword}" Target="{Binding ElementName=Cur}" />
+                        <PasswordBox x:Name="Cur" AutomationProperties.Name="{x:Static vm:Strings.CurrentPassword}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.NewPassword}" Target="{Binding ElementName=Pw1}" />
+                        <PasswordBox x:Name="Pw1" AutomationProperties.Name="{x:Static vm:Strings.NewPassword}" />
+                        <Label Style="{StaticResource Text.Label}" Content="{x:Static vm:Strings.RepeatPassword}" Target="{Binding ElementName=Pw2}" />
+                        <PasswordBox x:Name="Pw2" AutomationProperties.Name="{x:Static vm:Strings.RepeatPassword}" />
+                        <TextBlock Style="{StaticResource Text.Small}" Margin="0,6,0,0" Text="{x:Static vm:Strings.PasswordHint}" />
+                        <Button Style="{StaticResource Button.Primary}" HorizontalAlignment="Left" Margin="0,12,0,0" Content="{x:Static vm:Strings.ChangePassword}" Click="OnChangePassword" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Width="400" Margin="0,0,16,16" VerticalAlignment="Top" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Text.Section}" Margin="0" Text="{x:Static vm:Strings.RecoveryKeyTitle}" />
+                        <TextBlock Style="{StaticResource Text.Body}" Text="{x:Static vm:Strings.RotateRecoveryIntro}" />
+                        <Button Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Margin="0,12,0,0" Content="{x:Static vm:Strings.RecoveryKeyNew}" Command="{Binding RotateCommand}" />
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+            <Border Style="{StaticResource Card}" Margin="0,0,16,16" Visibility="{Binding IsOwner, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Section}" Margin="0" Text="{x:Static vm:Strings.AuditTitle}" />
+                    <TextBlock Style="{StaticResource Text.Base}" FontWeight="Medium" Text="{Binding AuditStatus}" AutomationProperties.AutomationId="AuditStatus" />
+                    <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,8" Text="{x:Static vm:Strings.AuditLimit}" />
+                    <ItemsControl ItemsSource="{Binding Audit}" Focusable="False" MaxHeight="360">
+                        <ItemsControl.Template>
+                            <ControlTemplate><ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False"><ItemsPresenter /></ScrollViewer></ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource Text.Small}" Text="{Binding When}" />
+                                    <TextBlock Grid.Column="1" Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextPrimary}">
+                                        <Run Text="{Binding Kind, Mode=OneWay}" /> <Run Text="{Binding Source, Mode=OneWay}" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                    </TextBlock>
+                                    <TextBlock Grid.Column="2" Style="{StaticResource Text.Small}" FlowDirection="LeftToRight" Text="{Binding Outcome}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
