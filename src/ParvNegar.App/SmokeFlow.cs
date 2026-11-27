@@ -21,8 +21,12 @@ namespace ParvNegar.App
     /// </summary>
     internal static class SmokeFlow
     {
-        public const string SyntheticOwnerPassword = "synthetic owner passphrase 1405 test";
-        public const string SyntheticDelegatePassword = "synthetic delegate passphrase 1405";
+        // Random per run: no credential is compiled into the product binary.
+        private static readonly string SyntheticOwnerPassword = RandomPhrase();
+        private static readonly string SyntheticDelegatePassword = RandomPhrase();
+        private static readonly string SyntheticDelegateOwnPassword = RandomPhrase();
+
+        private static string RandomPhrase() => "smoke " + ParvNegar.Security.Bytes.ToHex(ParvNegar.Security.CryptoRandom.Bytes(12));
 
         public static bool IsFlow(string[] args) => args.Any(a => a == "--flow");
         public static bool IsPrepare(string[] args) => args.Any(a => a == "--prepare");
@@ -99,7 +103,7 @@ namespace ParvNegar.App
                 Step("15-lock-inactivity", () => sm.Lock(LockReason.Inactivity));
                 Step("16-login-failed", () => ((LoginPageViewModel)shell.Page).Submit("not the right password at all"));
                 Step("17-delegate-must-change-password", () => { var l = (LoginPageViewModel)shell.Page; l.Username = "deputy.one"; l.Submit(SyntheticDelegatePassword); });
-                Step("18-delegate-workspace", () => ((ChangePasswordPageViewModel)shell.Page).Submit(SyntheticDelegatePassword, "delegate own passphrase 1405 ok", "delegate own passphrase 1405 ok"));
+                Step("18-delegate-workspace", () => ((ChangePasswordPageViewModel)shell.Page).Submit(SyntheticDelegatePassword, SyntheticDelegateOwnPassword, SyntheticDelegateOwnPassword));
                 Step("19-logout-login", () => ((WorkspacePageViewModel)shell.Page).LogoutCommand.Execute(null));
                 Step("20-owner-recovery", () => ((LoginPageViewModel)shell.Page).RecoverCommand.Execute(null));
 

@@ -207,6 +207,45 @@ namespace ParvNegar.App.Tests
         }
 
         [Fact]
+        public void Smoke_modes_never_use_the_real_data_folder_and_never_skip_the_gates()
+        {
+            using (var dir = new TempDir("smoke"))
+            {
+                var paths = SmokeRunner.SyntheticRoot(dir.Path);
+                var real = ParvNegar.Application.Security.InstallationPaths.Default().Root;
+                Assert.StartsWith(dir.Path, paths.Root, StringComparison.OrdinalIgnoreCase);
+                Assert.NotEqual(real, paths.Root, StringComparer.OrdinalIgnoreCase);
+                Assert.Throws<InvalidOperationException>(() => SmokeRunner.SyntheticRoot(real));
+                // A fresh synthetic root starts at the license gate like any installation.
+                using (var sm = new ParvNegar.Application.Security.SessionManager(paths, ParvNegar.App.Services.BuildTrust.Load(),
+                    new ParvNegar.Licensing.WindowsDeviceSignals(), new ParvNegar.Security.DpapiLocalMachineProtector(), new ParvNegar.Application.Security.SystemClock(), null))
+                {
+                    Assert.Equal(ParvNegar.Application.Security.AppState.Unlicensed, sm.State);
+                    Assert.False(sm.HasSession);
+                    Assert.Null(sm.Token);
+                }
+            }
+        }
+
+        [Fact]
+        public void Build_trust_is_development_only_and_never_contains_production_or_test_keys()
+        {
+            var trust = ParvNegar.App.Services.BuildTrust.Load();
+            Assert.Equal(ParvNegar.Licensing.TrustEnvironment.Development, trust.Environment);
+            Assert.All(trust.Keys, k => Assert.StartsWith("pn-dev-", k.Kid));
+            var production = System.IO.File.ReadAllBytes(System.IO.Path.Combine(FindRepoRoot(), "src", "ParvNegar.App", "Config", "trust", "Production.json"));
+            var p = ParvNegar.Licensing.TrustStore.Load(production, ParvNegar.Licensing.TrustEnvironment.Production);
+            Assert.All(p.Keys, k => Assert.StartsWith("pn-prod-", k.Kid));
+        }
+
+        private static string FindRepoRoot()
+        {
+            var d = new System.IO.DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            while (d != null && !System.IO.File.Exists(System.IO.Path.Combine(d.FullName, "ParvNegar.sln"))) d = d.Parent;
+            return d?.FullName ?? throw new InvalidOperationException("repository root not found");
+        }
+
+        [Fact]
         public void Layout_probe_detects_cut_off_controls()
         {
             RunSta(() =>
