@@ -1,0 +1,45 @@
+<Window x:Class="ParvNegar.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+        Title="{x:Static vm:Strings.AboutTitle}"
+        Icon="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon.ico"
+        FlowDirection="RightToLeft" Language="fa-IR"
+        Width="520" SizeToContent="Height" ResizeMode="NoResize" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Brush.Background}" FontFamily="{StaticResource Font.Ui}"
+        UseLayoutRounding="True">
+    <!-- Scrolls when the work area is shorter than the content (e.g. 1366x768 at 150% DPI). -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+    <Border Style="{StaticResource Card}" Margin="16">
+        <StackPanel>
+            <Image Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon-256.png" Width="88" Height="88"
+                   RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="پرونگار" />
+            <TextBlock Style="{StaticResource Text.Title}" Margin="0,10,0,0" Text="{Binding ProductName}" />
+            <TextBlock Style="{StaticResource Text.Subtitle}" Text="{Binding Tagline}" />
+            <TextBlock Style="{StaticResource Text.Subtitle}" Margin="0,6,0,0" Text="{Binding VersionText}" />
+            <Separator Margin="0,18" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition /><RowDefinition /><RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Style="{StaticResource Text.Small}" FontWeight="Medium" Text="{x:Static vm:Strings.AboutPublisher}" Margin="0,0,16,6" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Text.Small}" Text="OAR NOVA Games Studio — oarnova.games" />
+                <TextBlock Grid.Row="1" Style="{StaticResource Text.Small}" FontWeight="Medium" Text="{x:Static vm:Strings.AboutDistribution}" Margin="0,0,16,6" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Text.Small}" Text="yarizan.oarnova.games" />
+                <TextBlock Grid.Row="2" Style="{StaticResource Text.Small}" FontWeight="Medium" Text="{x:Static vm:Strings.AboutSchool}" Margin="0,0,16,6" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Text.Small}" Text="{Binding SchoolName}" />
+            </Grid>
+            <TextBlock Style="{StaticResource Text.Small}" Margin="0,14,0,0" Text="{x:Static vm:Strings.AboutOffline}" />
+            <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,0" Text="{x:Static vm:Strings.AboutFont}" />
+            <TextBlock Style="{StaticResource Text.Small}" Margin="0,4,0,0" Text="{x:Static vm:Strings.AboutCopyright}" />
+            <Button x:Name="CloseButton" Style="{StaticResource Button.Primary}" HorizontalAlignment="Center" Margin="0,22,0,0" MinWidth="140"
+                    Content="{x:Static vm:Strings.Close}" IsCancel="True" IsDefault="True" Click="OnClose" AutomationProperties.AutomationId="CloseAbout" />
+        </StackPanel>
+    </Border>
+    </ScrollViewer>
+</Window>

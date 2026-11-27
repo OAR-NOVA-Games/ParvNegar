@@ -2,6 +2,8 @@
 
 Date: 2026-11-26. SRS: v1.0 (AUTH, LIC, DOC, BKP, NFR-02/03, PLAT-03). Method: asset/actor/boundary listing, then STRIDE per boundary. Status: candidate for owner and security review. No claim of unbreakable security.
 
+> **Phase 1 update (2026-11-26):** the key hierarchy in §4 and the nonce description are superseded by `docs/phase-01/SECURITY-ARCHITECTURE.md` and `docs/phase-01/STORAGE-FORMAT.md`. DPAPI no longer wraps the LMK; normal unlock requires password AND device secret.
+
 ## 1. Assets
 
 | ID | Asset | Sensitivity |

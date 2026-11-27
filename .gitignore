@@ -25,6 +25,7 @@ __pycache__/
 *.sqlite3
 *.pnbk
 *.pnbk.partial
+*.partial
 *.bak
 *.rar
 *.zip
@@ -47,3 +48,6 @@ secrets/
 *.env
 .env*
 **/scratch-keys/
+
+# --- Local Claude Code / tool settings ---
+.claude/settings.local.json

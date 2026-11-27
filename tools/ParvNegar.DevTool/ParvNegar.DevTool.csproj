@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Engineering tool: cross-edition interoperability and isolated compatibility checks. Synthetic data only.
+       Not shipped to customers. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
+    <ParvIsExecutable>true</ParvIsExecutable>
+    <RootNamespace>ParvNegar.DevTool</RootNamespace>
+    <AssemblyName>ParvNegar.DevTool</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParvNegar.Storage\ParvNegar.Storage.csproj" />
+    <ProjectReference Include="..\..\src\ParvNegar.Domain\ParvNegar.Domain.csproj" />
+  </ItemGroup>
+</Project>

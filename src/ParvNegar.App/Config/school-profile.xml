@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  School configuration for the development shell (Phase 1). Not student data.
+  HomeTitle must stay exactly as approved by the owner (SRS §1): do not reformat, trim or change spaces.
+  In later phases this profile lives in the encrypted database (school_profile table).
+-->
+<SchoolProfile Id="5b2e6d0a-6f0e-4d3c-9a51-2a9b7f1c0e11">
+  <!-- SchoolName is taken from the approved title wording; the official Persian school name is pending owner confirmation. -->
+  <SchoolName>مدرسه شاهد شهیده شهناز کریمی</SchoolName>
+  <HomeTitle>ثبت شاخص های آموزشی و پرورشی دانش آموزان جامعه هدف مدرسه شاهد شهیده شهناز کریمی</HomeTitle>
+</SchoolProfile>

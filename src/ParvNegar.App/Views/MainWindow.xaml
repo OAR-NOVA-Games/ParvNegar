@@ -1,0 +1,97 @@
+<Window x:Class="ParvNegar.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+        Title="{x:Static vm:Strings.WindowTitle}"
+        Icon="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon.ico"
+        FlowDirection="RightToLeft"
+        Language="fa-IR"
+        Width="1100" Height="720" MinWidth="800" MinHeight="600"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
+        Background="{DynamicResource Brush.Background}"
+        FontFamily="{StaticResource Font.Ui}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding BackCommand}" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header: product identity. In RTL, Dock="Left" is the visual start (right side). -->
+        <Border Grid.Row="0" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="28,12">
+            <!-- Columns instead of docking: on a narrow work area the notice wraps instead of overlapping the logo. -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="0" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" x:Name="ProductLogo" Height="56" RenderOptions.BitmapScalingMode="HighQuality"
+                       Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-Logo-Horizontal-Transparent.png"
+                       AutomationProperties.Name="پرونگار" />
+                <TextBlock Grid.Column="1" x:Name="DevNoticeText" Style="{StaticResource Text.Small}" VerticalAlignment="Center" Margin="16,0,0,0"
+                           HorizontalAlignment="Right" TextAlignment="Right" TextWrapping="Wrap"
+                           Text="{Binding DevNotice}" Foreground="{DynamicResource Brush.Complement}" FontWeight="Medium" />
+            </Grid>
+        </Border>
+
+        <!-- Home -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False"
+                      Visibility="{Binding IsHome, Converter={StaticResource BoolToVisibility}}">
+            <Grid Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="820">
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <Border Height="4" Width="72" CornerRadius="2" Background="{DynamicResource Brush.Accent}" HorizontalAlignment="Center" Margin="0,0,0,18" />
+                        <TextBlock x:Name="HomeTitleText" Style="{StaticResource Text.Title}" Text="{Binding HomeTitle, Mode=OneTime}"
+                                   AutomationProperties.AutomationId="HomeTitle" />
+                        <TextBlock Style="{StaticResource Text.Subtitle}" Margin="0,12,0,0" Text="{Binding Tagline}" />
+                        <!-- WrapPanel: buttons move to a new line on a narrow work area instead of being cut off. -->
+                        <WrapPanel x:Name="HomeActions" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,26,0,0" KeyboardNavigation.TabNavigation="Cycle">
+                            <Button x:Name="StartButton" Style="{StaticResource Button.Primary}" Content="{x:Static vm:Strings.Start}" Margin="6"
+                                    Command="{Binding StartCommand}" TabIndex="0" IsDefault="True" AutomationProperties.AutomationId="Start" />
+                            <Button x:Name="AboutButton" Style="{StaticResource Button.Secondary}" Content="{x:Static vm:Strings.About}" Margin="6"
+                                    Command="{Binding AboutCommand}" TabIndex="1" AutomationProperties.AutomationId="About" />
+                            <Button x:Name="ExitButton" Style="{StaticResource Button.Secondary}" Content="{x:Static vm:Strings.Exit}" Margin="6"
+                                    Command="{Binding ExitCommand}" TabIndex="2" AutomationProperties.AutomationId="Exit" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Placeholder after Start (no data, no login yet) -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False"
+                      Visibility="{Binding IsPlaceholder, Converter={StaticResource BoolToVisibility}}">
+            <Border Style="{StaticResource Card}" Margin="24" MaxWidth="720" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Title}" FontSize="22" Text="{x:Static vm:Strings.PlaceholderTitle}" />
+                    <TextBlock Style="{StaticResource Text.Subtitle}" Margin="0,14,0,0" Text="{x:Static vm:Strings.PlaceholderBody}" />
+                    <Button x:Name="BackButton" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Center" Margin="0,28,0,0"
+                            Content="{x:Static vm:Strings.Back}" Command="{Binding BackCommand}" AutomationProperties.AutomationId="Back" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Footer: school and publisher identities, kept separate -->
+        <Border Grid.Row="2" Background="{DynamicResource Brush.Primary}" Padding="28,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="0" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="FooterSchool" Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}"
+                           Text="{Binding SchoolName}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" />
+                <StackPanel Grid.Column="1" x:Name="FooterPublisher" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}" Text="{Binding VersionText}" />
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.Complement}" Text="  •  " />
+                    <TextBlock Style="{StaticResource Text.Small}" Foreground="{DynamicResource Brush.TextOnPrimary}" Text="{Binding PublisherLine}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

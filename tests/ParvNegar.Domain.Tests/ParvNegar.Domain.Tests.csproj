@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParvNegar.Domain\ParvNegar.Domain.csproj" />
+  </ItemGroup>
+</Project>
