@@ -95,15 +95,16 @@ namespace ParvNegar.DevTool
                 using (var dst = File.Create(Path.Combine(dir, "blob.enc")))
                     ChunkedAead.Encrypt(lmk.AttachmentKey(), 0, Bytes.Sha256(Encoding.ASCII.GetBytes("blob-header")), src, dst);
 
-                var lmkFile = Path.Combine(dir, "lmk.bin");
-                File.WriteAllBytes(lmkFile, Bytes.FromHex(Program.ScratchLmkHex));
-                BackupArchive.Create(Path.Combine(dir, "backup.pnbk"), new[]
-                {
-                    new BackupEntrySource("database/parvnegar.db", db),
-                    new BackupEntrySource("attachments/0001.blob", Path.Combine(dir, "blob.enc")),
-                    new BackupEntrySource("keys/lmk", lmkFile),
-                }, Program.ScratchPassphrase, MigrationRunner.Embedded().Count, Program.Kdf);
-                File.Delete(lmkFile);
+                // The LMK goes into the archive from memory only; no plaintext key file is written.
+                var lmkBytes = Bytes.FromHex(Program.ScratchLmkHex);
+                using (var keyEntry = BackupEntrySource.FromKeyMaterial("keys/lmk", lmkBytes))
+                    BackupArchive.Create(Path.Combine(dir, "backup.pnbk"), new[]
+                    {
+                        new BackupEntrySource("database/parvnegar.db", db),
+                        new BackupEntrySource("attachments/0001.blob", Path.Combine(dir, "blob.enc")),
+                        keyEntry,
+                    }, Program.ScratchPassphrase, MigrationRunner.Embedded().Count, Program.Kdf);
+                Bytes.Wipe(lmkBytes);
             }
             File.WriteAllText(Path.Combine(dir, "producer.txt"), Program.Edition + "\n" + RuntimeInformation.FrameworkDescription + "\n", new UTF8Encoding(false));
             Console.WriteLine("PRODUCED\t" + Program.Edition + "\t" + dir);
@@ -162,12 +163,20 @@ namespace ParvNegar.DevTool
                     Program.Check("BACKUP_RESTORE_AND_INTEGRITY", () =>
                     {
                         var stage = Path.Combine(work, "stage");
-                        var info = BackupArchive.RestoreToStaging(arc, Program.ScratchPassphrase, stage, new BackupLimits { MaxSchemaVersion = schema });
-                        if (info.Entries.Any(e => e.Name.StartsWith("license", StringComparison.Ordinal) || e.Name.StartsWith("device", StringComparison.Ordinal)))
-                            throw new Exception("backup carries a license or device secret");
-                        var restoredLmk = File.ReadAllBytes(Path.Combine(stage, "keys", "lmk"));
-                        using (var l2 = LocalMasterKey.FromBytes(restoredLmk))
-                            return "entries=" + info.Entries.Count + " schema=" + info.SchemaVersion + "; " + VerifyDb(Path.Combine(stage, "database", "parvnegar.db"), l2.DatabaseKey());
+                        using (var info = BackupArchive.RestoreToStaging(arc, Program.ScratchPassphrase, stage, new BackupLimits { MaxSchemaVersion = schema }))
+                        {
+                            if (info.Entries.Any(e => e.Name.StartsWith("license", StringComparison.Ordinal) || e.Name.StartsWith("device", StringComparison.Ordinal)))
+                                throw new Exception("backup carries a license or device secret");
+                            if (Directory.Exists(Path.Combine(stage, "keys")) || Directory.EnumerateFiles(stage, "*", SearchOption.AllDirectories).Any(f => f.IndexOf("lmk", StringComparison.OrdinalIgnoreCase) >= 0))
+                                throw new Exception("key material was written to the staging directory");
+                            var restoredLmk = info.GetKeyEntry("keys/lmk");
+                            try
+                            {
+                                using (var l2 = LocalMasterKey.FromBytes(restoredLmk))
+                                    return "entries=" + info.Entries.Count + " schema=" + info.SchemaVersion + "; key entry in memory only; " + VerifyDb(Path.Combine(stage, "database", "parvnegar.db"), l2.DatabaseKey());
+                            }
+                            finally { Bytes.Wipe(restoredLmk); }
+                        }
                     });
 
                     var raw = File.ReadAllBytes(arc);
@@ -218,7 +227,7 @@ namespace ParvNegar.DevTool
         {
             var p = Path.Combine(work, name + ".pnbk");
             File.WriteAllBytes(p, data);
-            BackupArchive.RestoreToStaging(p, Program.ScratchPassphrase, Path.Combine(work, name), null);
+            BackupArchive.RestoreToStaging(p, Program.ScratchPassphrase, Path.Combine(work, name), null).Dispose();
         }
 
         private static byte[] Flip(byte[] b, int pos) { var c = (byte[])b.Clone(); c[pos] ^= 0x10; return c; }
@@ -306,7 +315,7 @@ namespace ParvNegar.DevTool
                         if (Directory.Exists(stage)) Directory.Delete(stage, true);
                         File.WriteAllBytes(src, CryptoRandom.Bytes(200000));
                         BackupArchive.Create(arc, new[] { new BackupEntrySource("data/x.bin", src) }, Encoding.UTF8.GetBytes("p"), 1, Program.Kdf);
-                        BackupArchive.RestoreToStaging(arc, Encoding.UTF8.GetBytes("p"), stage, null);
+                        BackupArchive.RestoreToStaging(arc, Encoding.UTF8.GetBytes("p"), stage, null).Dispose();
                         if (!Bytes.FixedTimeEquals(Bytes.Sha256(File.ReadAllBytes(src)), Bytes.Sha256(File.ReadAllBytes(Path.Combine(stage, "data", "x.bin"))))) throw new Exception("hash mismatch");
                         detail = "backup roundtrip ok";
                         break;

@@ -50,12 +50,14 @@ namespace ParvNegar.Storage.Tests
                 Assert.True(raw.Length > 300000);
                 foreach (var s in sources) Assert.True(Find(raw, Encoding.UTF8.GetBytes(s.Name)) < 0, "entry name visible: " + s.Name);
 
-                var info = BackupArchive.RestoreToStaging(arc, Pass, work.File("stage"), new BackupLimits { MaxSchemaVersion = 1 });
-                Assert.Equal(1, info.SchemaVersion);
-                Assert.Equal(sources.Count, info.Entries.Count);
-                foreach (var s in sources)
-                    Assert.Equal(Bytes.ToHex(Bytes.Sha256(File.ReadAllBytes(s.FilePath))),
-                                 Bytes.ToHex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(work.File("stage"), s.Name.Replace('/', Path.DirectorySeparatorChar))))));
+                using (var info = BackupArchive.RestoreToStaging(arc, Pass, work.File("stage"), new BackupLimits { MaxSchemaVersion = 1 }))
+                {
+                    Assert.Equal(1, info.SchemaVersion);
+                    Assert.Equal(sources.Count, info.Entries.Count);
+                    foreach (var s in sources)
+                        Assert.Equal(Bytes.ToHex(Bytes.Sha256(File.ReadAllBytes(s.FilePath))),
+                                     Bytes.ToHex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(work.File("stage"), s.Name.Replace('/', Path.DirectorySeparatorChar))))));
+                }
             }
         }
 
@@ -120,6 +122,14 @@ namespace ParvNegar.Storage.Tests
         [InlineData("Upper.txt")]
         [InlineData("a//b")]
         [InlineData("c:/x")]
+        [InlineData("con")]
+        [InlineData("data/nul.txt")]
+        [InlineData("attachments/com1.blob")]
+        [InlineData("a./b")]
+        [InlineData("data/x.")]
+        [InlineData("data/school.pnlic")]
+        [InlineData("data/request.pnreq")]
+        [InlineData("data/install.pnds")]
         public void Unsafe_or_forbidden_entry_names_are_refused(string name)
         {
             Assert.Throws<ArgumentException>(() => BackupArchive.ValidateName(name));
@@ -152,6 +162,150 @@ namespace ParvNegar.Storage.Tests
                 Bytes.WriteUInt32BE(raw, 21, 2u * 1024 * 1024); // 2 GiB memory request
                 File.WriteAllBytes(work.File("b.pnbk"), raw);
                 Assert.Throws<MalformedDataException>(() => BackupArchive.RestoreToStaging(work.File("b.pnbk"), Pass, work.File("s"), null));
+            }
+        }
+
+        [Fact]
+        public void Key_entries_round_trip_in_memory_and_never_reach_disk()
+        {
+            using (var src = new TempDir("bk-src"))
+            using (var work = new TempDir("bk-work"))
+            {
+                var key = CryptoRandom.Bytes(32);
+                var sources = MakeSources(src.Path);
+                var arc = work.File("k.pnbk");
+                using (var keyEntry = BackupEntrySource.FromKeyMaterial("keys/lmk", key))
+                {
+                    sources.Add(keyEntry);
+                    BackupArchive.Create(arc, sources, Pass, 1, Fast);
+                }
+                Assert.True(Find(File.ReadAllBytes(arc), key) < 0, "raw key visible in archive");
+                Assert.DoesNotContain(Directory.GetFiles(src.Path), f => Find(File.ReadAllBytes(f), key) >= 0);
+
+                var stage = work.File("stage");
+                var info = BackupArchive.RestoreToStaging(arc, Pass, stage, null);
+                using (info)
+                {
+                    Assert.Equal(new[] { "keys/lmk" }, info.KeyEntryNames.ToArray());
+                    Assert.Equal(Bytes.ToHex(key), Bytes.ToHex(info.GetKeyEntry("keys/lmk")));
+                    Assert.False(Directory.Exists(Path.Combine(stage, "keys")), "key entry written to staging");
+                    foreach (var f in Directory.EnumerateFiles(work.Path, "*", SearchOption.AllDirectories))
+                        Assert.True(Find(File.ReadAllBytes(f), key) < 0, "plaintext key found on disk: " + Path.GetFileName(f));
+                }
+                Assert.Throws<ObjectDisposedException>(() => info.GetKeyEntry("keys/lmk"));
+            }
+        }
+
+        [Fact]
+        public void Key_entries_cannot_come_from_files_and_file_entries_cannot_use_keys_prefix()
+        {
+            Assert.Throws<ArgumentException>(() => new BackupEntrySource("keys/lmk", "lmk.bin"));
+            Assert.Throws<ArgumentException>(() => BackupEntrySource.FromKeyMaterial("data/x.bin", new byte[32]));
+            Assert.Throws<ArgumentException>(() => BackupEntrySource.FromKeyMaterial("keys/big", new byte[BackupArchive.MaxKeyEntryBytes + 1]));
+            Assert.Throws<ArgumentException>(() => BackupEntrySource.FromKeyMaterial("keys/empty", new byte[0]));
+        }
+
+        [Fact]
+        public void Source_held_open_for_writing_is_refused_and_leaves_nothing()
+        {
+            using (var src = new TempDir("bk-src"))
+            using (var work = new TempDir("bk-work"))
+            {
+                var sources = MakeSources(src.Path);
+                var arc = work.File("w.pnbk");
+                using (new FileStream(sources[0].FilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    Assert.ThrowsAny<IOException>(() => BackupArchive.Create(arc, sources, Pass, 1, Fast));
+                Assert.Empty(Directory.GetFiles(work.Path));
+            }
+        }
+
+        [Fact]
+        public void Sources_cannot_be_opened_for_writing_while_the_backup_is_written()
+        {
+            using (var src = new TempDir("bk-src"))
+            using (var work = new TempDir("bk-work"))
+            {
+                var sources = MakeSources(src.Path);
+                var arc = work.File("m.pnbk");
+                // Max-bound KDF keeps Create busy while every source is already open with FileShare.Read.
+                var slow = new Argon2idParameters(Argon2idParameters.MaxMemoryKiB, Argon2idParameters.MaxIterations, 1);
+                var create = System.Threading.Tasks.Task.Run(() => BackupArchive.Create(arc, sources, Pass, 1, slow));
+                Exception writerError = null;
+                var deadline = DateTime.UtcNow.AddSeconds(30);
+                while (writerError == null && !create.IsCompleted && DateTime.UtcNow < deadline)
+                {
+                    try { using (new FileStream(sources[0].FilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite)) { } System.Threading.Thread.Sleep(5); }
+                    catch (IOException ex) { writerError = ex; }
+                }
+                create.Wait();
+                Assert.NotNull(writerError);
+                using (var info = BackupArchive.RestoreToStaging(arc, Pass, work.File("stage"), null))
+                    Assert.Equal(sources.Count, info.Entries.Count);
+            }
+        }
+
+        [Fact]
+        public void Unrelated_partial_files_are_never_deleted_and_archive_cannot_be_its_own_source()
+        {
+            using (var src = new TempDir("bk-src"))
+            using (var work = new TempDir("bk-work"))
+            {
+                var sources = MakeSources(src.Path);
+                var arc = work.File("p.pnbk");
+                File.WriteAllText(arc + ".partial", "user file");
+                BackupArchive.Create(arc, sources, Pass, 1, Fast);
+                Assert.Equal("user file", File.ReadAllText(arc + ".partial"));
+                Assert.Equal(2, Directory.GetFiles(work.Path).Length);
+
+                var self = src.File("self.pnbk");
+                var withSelf = new List<BackupEntrySource>(sources) { new BackupEntrySource("data/self.bin", self) };
+                Assert.Throws<ArgumentException>(() => BackupArchive.Create(self, withSelf, Pass, 1, Fast));
+                Assert.Throws<DirectoryNotFoundException>(() => BackupArchive.Create(work.File(Path.Combine("missing", "x.pnbk")), sources, Pass, 1, Fast));
+            }
+        }
+
+        [Fact]
+        public void Conflicting_entry_names_are_refused()
+        {
+            using (var src = new TempDir("bk-src"))
+            using (var work = new TempDir("bk-work"))
+            {
+                File.WriteAllBytes(src.File("a"), new byte[] { 1 });
+                File.WriteAllBytes(src.File("b"), new byte[] { 2 });
+                var conflict = new[] { new BackupEntrySource("data", src.File("a")), new BackupEntrySource("data/x.bin", src.File("b")) };
+                Assert.Throws<ArgumentException>(() => BackupArchive.Create(work.File("c.pnbk"), conflict, Pass, 1, Fast));
+                var dup = new[] { new BackupEntrySource("data/x.bin", src.File("a")), new BackupEntrySource("data/x.bin", src.File("b")) };
+                Assert.Throws<ArgumentException>(() => BackupArchive.Create(work.File("d.pnbk"), dup, Pass, 1, Fast));
+                Assert.Empty(Directory.GetFiles(work.Path));
+            }
+        }
+
+        [Fact]
+        public void Restore_requires_existing_parent_and_missing_archive_creates_nothing()
+        {
+            using (var work = new TempDir("bk-work"))
+            {
+                Assert.Throws<DirectoryNotFoundException>(() => BackupArchive.RestoreToStaging(work.File("none.pnbk"), Pass, Path.Combine(work.File("missing"), "stage"), null));
+                Assert.Throws<FileNotFoundException>(() => BackupArchive.RestoreToStaging(work.File("none.pnbk"), Pass, work.File("stage"), null));
+                Assert.False(Directory.Exists(work.File("missing")) || Directory.Exists(work.File("stage")));
+            }
+        }
+
+        [Fact]
+        public void Key_only_archive_restores_with_empty_staging_and_format_v1()
+        {
+            // The PNBK v1 wire format is unchanged: key entries are ordinary encrypted entries;
+            // only the reader decides to keep keys/... in memory.
+            using (var work = new TempDir("bk-work"))
+            {
+                var key = CryptoRandom.Bytes(32);
+                var arc = work.File("v1.pnbk");
+                using (var keyEntry = BackupEntrySource.FromKeyMaterial("keys/lmk", key))
+                    BackupArchive.Create(arc, new[] { keyEntry }, Pass, 1, Fast);
+                Assert.Equal(1, BackupArchive.ReadHeaderInfo(arc).FormatVersion);
+                using (var info = BackupArchive.RestoreToStaging(arc, Pass, work.File("s"), null))
+                    Assert.Equal(Bytes.ToHex(key), Bytes.ToHex(info.GetKeyEntry("keys/lmk")));
+                Assert.Empty(Directory.GetFileSystemEntries(work.File("s")));
             }
         }
 

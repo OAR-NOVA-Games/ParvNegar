@@ -25,6 +25,7 @@ __pycache__/
 *.sqlite3
 *.pnbk
 *.pnbk.partial
+*.partial
 *.bak
 *.rar
 *.zip
