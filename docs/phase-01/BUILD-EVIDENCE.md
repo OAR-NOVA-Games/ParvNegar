@@ -2,6 +2,8 @@
 
 Date: 2026-11-26. Host: Windows 11 Home x64 10.0.26300, i7-12700H, 15.6 GB RAM (about 2–3 GB free during runs). .NET SDK 10.0.401; .NET Framework 4.8 targeting pack; .NET Framework 4.8.1 runtime; .NET 10.0.12 runtime (x64 and x86).
 
+> **2026-11-27 follow-up:** clean locked build ×4 re-run, BUILD_OK, 0 warnings, 46 s. Application and DevTool binaries changed, so the artifact hashes below describe the 2026-11-26 build only (PHASE-01-REVIEW-FOLLOWUP.md §3.2).
+
 ## Commands and results
 
 | Step | Command | Exit | Result |

@@ -12,6 +12,8 @@ Date: 2026-11-26. Continues `docs/phase-00/DECISION-REGISTER.md`. Status: **Appr
 | G-GIT | First commit, branch, remote | **Approved: initial commit on `main` pushed to the empty private remote, then all Phase 1 work on `feat/phase-01` pushed to the remote; no force-push, no merge to main** | See §3 for what actually happened |
 | L-01 / D-06 | QuestPDF eligibility / PDF engine | **Approved: PDF-engine selection deferred beyond Phase 1** | No PDF package in Phase 1; ports only |
 | O-10 (part) | Theme | **Approved: Light theme only; Dark prepared structurally, not implemented** | `Themes/Light.xaml` |
+| UI-SPLASH | Startup splash | **Requested by the owner 2026-11-27: splash screen with the studio (OAR NOVA) logo for 2 seconds** | `SplashWindow`, PHASE-01-REVIEW-FOLLOWUP §3 |
+| N-02 | OAR NOVA publisher mark | **Supplied by the owner 2026-11-26** (`ParvNegar-School-Publisher-Assets.zip`) | `assets/publisher/`; school logos in the same zip wait for N-01 |
 
 ## 2. Engineering decisions recorded in Phase 1 (reviewable)
 
@@ -35,6 +37,7 @@ Date: 2026-11-26. Continues `docs/phase-00/DECISION-REGISTER.md`. Status: **Appr
 | Local `feat/phase-01` | Phase 1 commits on top of `main` |
 | Push | Done 2026-11-26: the owner pushed `main` and `feat/phase-01` (the agent push had been blocked by the session safety classifier); later feature-branch pushes by the agent with owner-granted permission |
 | Merge to main | Not done; needs separate owner approval |
+| Repository visibility | **PUBLIC** (verified 2026-11-27 with `gh repo view`), contrary to the "private remote" assumption. Owner decision required (PHASE-01-REVIEW-FOLLOWUP §5) |
 | CI | Not enabled (minutes not approved) |
 
 ## 4. Open decisions carried forward
@@ -50,5 +53,6 @@ Date: 2026-11-26. Continues `docs/phase-00/DECISION-REGISTER.md`. Status: **Appr
 | O-02 / O-09 | Assessment periods and print layout; reports | Phase 4/6 | — |
 | D-06 | PDF engine and Legacy PDF/preview route (QuestPDF eligibility, Windows 7 natives, bidi) | Before Phase 6 | Decide after Windows 7/8.1 kit results |
 | N-01 | Official Persian school name text and school logo use | Phase 3 | Owner supplies |
-| N-02 | OAR NOVA publisher mark asset for About/footer | Any | Owner supplies or text stays |
+| N-02 | Publisher mark placement in About/footer (mark supplied 2026-11-26; used on the splash) | Phase 2D | — |
+| G-VIS | Repository visibility (currently public) | Immediately | Make the repository private |
 | N-03 | Windows 10 test machine (22H2 and/or LTSC) | Before release | Owner provides |

@@ -2,6 +2,8 @@
 
 Date: 2026-11-26. All data synthetic. Commands run from the repository root on the Windows 11 x64 host. "x86" rows ran in 32-bit processes (WOW64) and were verified by `PARVNEGAR_EXPECTED_ARCH`, which makes every test class fail if `Environment.Is64BitProcess` disagrees. WOW64 on Windows 11 does not qualify a 32-bit Windows installation.
 
+> **Superseded counts (2026-11-27 follow-up):** 134 tests × 4 combinations = 536 executions, 0 failures. New tests and results: PHASE-01-REVIEW-FOLLOWUP.md §2 and §3.2. The figures below are the original 2026-11-26 run.
+
 ## 1. Unit, security, storage and UI tests
 
 Command: `powershell -ExecutionPolicy Bypass -File test.ps1 -NoBuild` → exit 0, `FAILED_RUNS=0`, 164 s. TRX files: `artifacts/test-results/<tfm>-<rid>/` (not committed).

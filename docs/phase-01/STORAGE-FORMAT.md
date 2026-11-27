@@ -113,12 +113,23 @@ Stream 0 is the manifest, streams 1..N are the files in manifest order, each enc
 "PNMF" | version:u8 = 1 | count:u32 | count × ( nameLen:u16 | name UTF-8 | size:u64 | sha256[32] )
 ```
 
-Entry names use `[a-z0-9._-/]`, ≤ 200 characters, no leading or trailing `/`, no `//`, no `.` or `..` segments. Names starting with `license`, `device` or `secrets` are refused on write and on read: **device licenses and device secrets are never backed up**.
+Entry names use `[a-z0-9._-/]`, ≤ 200 characters, no leading or trailing `/`, no `//`, no `.` or `..` segments, no segment ending in `.`, and no Windows device name as a segment stem (`con`, `prn`, `aux`, `nul`, `conin$`, `conout$`, `com0`–`com9`, `lpt0`–`lpt9`, with any extension). Names starting with `license`, `device` or `secrets`, or ending in `.pnlic`, `.pnreq`, `.pnds` or `.pnprov`, are refused on write and on read: **device licenses, activation files and device secrets are never backed up**. A name set must not contain duplicates or a name that is also used as a folder (`a` together with `a/b`); readers reject such a manifest as malformed. Names are decoded as strict UTF-8.
+
+**Key entries** (`keys/...`, at most 4,096 bytes, follow-up 2026-11-27): on the wire they are ordinary encrypted entries, so the PNBK v1 format is unchanged and Phase 1 archives stay readable. The writer accepts them only from memory (`BackupEntrySource.FromKeyMaterial`), never from a file. The reader never writes them to staging: `RestoreToStaging` returns them in memory (`BackupInfo.GetKeyEntry`), and `BackupInfo.Dispose` wipes them.
 
 ### 4.3 Write and restore rules
 
-- Write: hash all sources first, write to `<archive>.partial`, flush to disk, then rename. An existing archive is never overwritten. A source that changes size during the write aborts the backup.
-- Restore: `RestoreToStaging` requires a non-existent staging directory. It checks the header, version, schema limit, entry count and KDF bounds, then unwraps BAK (wrong passphrase → `AuthenticationFailedException`). It decrypts the manifest, then every entry, with size limits (default 2 GiB per entry, 64 GiB total), path containment, SHA-256 per entry and no trailing data. Any failure deletes the staging directory. Live data is never touched; the atomic switch to live data is a Phase 6 operation.
+- Write:
+  - The target folder must exist. An existing archive (file or folder) is never overwritten, and the archive cannot be one of its own sources.
+  - Every source is opened with `FileShare.Read` before hashing and stays open until the end, so no other process can write to it. A source that another process holds open for writing, such as a live database, is refused.
+  - Each entry is hashed again while it is encrypted. A size or SHA-256 difference from the manifest aborts the backup.
+  - Output goes to a unique `<archive>.<random>.partial` file, which is flushed to disk and then renamed. A pre-existing `<archive>.partial` belonging to someone else is never deleted. On failure only our own partial file is removed.
+- Restore:
+  - `RestoreToStaging` requires a non-existent staging directory whose parent exists, cannot be a volume root, and requires an existing archive.
+  - It checks the header, version, schema limit (schema ≥ 1), entry count and KDF bounds, then unwraps BAK (wrong passphrase → `AuthenticationFailedException`).
+  - It decrypts the manifest, then every entry, with size limits (default 2 GiB per entry, 64 GiB total), path containment, SHA-256 per entry and no trailing data.
+  - Any failure wipes in-memory key entries and deletes the staging directory. If that deletion fails after 3 attempts, `BackupStagingCleanupException` (which carries the path and the original error) is thrown instead of failing silently.
+  - Live data is never touched; the atomic switch to live data is a Phase 6 operation.
 
 ## 5. Bounds and limits
 

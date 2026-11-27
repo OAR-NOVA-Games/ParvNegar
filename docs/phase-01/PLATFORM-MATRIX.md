@@ -26,4 +26,4 @@ Notes:
 - Rows 1–4 prove the binaries and formats; they do not prove older Windows versions. WOW64 is not a 32-bit OS.
 - The Phase 1 App loads no PDF or preview native code. Only the storage native DLL matters for Phase 1 rows. Phase 0 static findings for Skia/HarfBuzz/QuestPDF/PDFium remain open under D-06.
 - Windows 7 SP1 prerequisite: .NET Framework 4.8 offline installer. Whether SHA-2 code-signing updates (KB4474419/KB4490628) are needed depends on the Phase 7 signing method and will be verified on a real Windows 7 SP1 machine.
-- Kit: `artifacts\ParvNegar-Phase1-CompatKit.zip` (22,193,863 bytes, SHA-256 `0a11838d12a75331f7545f8fff3b8ff41076b6f9c622f646308d750f2b04d932`). It records startup time, peak private memory and Argon2id timing, plus an interop data set to bring back.
+- Kit (rebuilt in the 2026-11-27 follow-up; the earlier 22,193,863-byte kit `0a11838d…d932` is superseded): `artifacts\ParvNegar-Phase1-CompatKit.zip` (23,275,653 bytes, SHA-256 `88617c7c72cdc881a134c5cce406962ea2d64d55401dfb3a1526ecad074fc19c`). It records startup time, peak private memory and Argon2id timing, plus an interop data set to bring back.

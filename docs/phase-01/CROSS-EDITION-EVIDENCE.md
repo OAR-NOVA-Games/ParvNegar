@@ -2,6 +2,8 @@
 
 Date: 2026-11-26. Command: `powershell -ExecutionPolicy Bypass -File tools\Run-CrossEdition.ps1` → exit 0, `FAILED_CHECKS=0`, 24 s. Output matrix: `artifacts/interop/cross-edition-matrix.tsv` (not committed; 165 lines). Synthetic data and a publicly known scratch key (`ParvNegar.DevTool`, test only).
 
+> **2026-11-27 follow-up:** matrix re-run 164/164 PASS. The backup check now also verifies that the LMK key entry stays in memory. The 16 Phase 1 data sets were consumed by the follow-up builds, 16/16 exit 0 (PHASE-01-REVIEW-FOLLOWUP.md §3.2).
+
 ## 1. Method
 
 1. Each of the four builds runs `interop-produce <dir>` and creates:

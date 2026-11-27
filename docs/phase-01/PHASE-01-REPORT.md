@@ -91,7 +91,7 @@ Windows 11 x64 (x64 and WOW64 x86, both editions): build, runtime, static and vi
 
 ## 9. UI screenshots
 
-`screenshots/home-1024x768.png`, `home-1366x768.png`, `home-800x600.png`, `start-placeholder-1024x768.png`, `about.png`. Real screen captures at 125% DPI with synthetic configuration only. Modern x64 and Legacy x86 output was byte-identical.
+Replaced in the follow-up: `screenshots/splash.png`, `home-1024x768-at125.png`, `home-1366x768-at125.png`, `home-1920x1080-at125.png`, `start-1024x768-at125.png`, `about.png`. Real screen captures at 125% DPI with synthetic configuration only; the window is sized to the work area of each named display (UI-SHELL-REPORT §3).
 
 ## 10. Outstanding risks and blockers
 
@@ -115,5 +115,20 @@ Windows 11 x64 (x64 and WOW64 x86, both editions): build, runtime, static and vi
 ## 12. Proposed Phase 2 scope
 
 Offline signed licensing (format, device binding, request/response files), a publisher-only issuer and provisioning tool, first-run setup (license → device secret → LMK → encrypted DB → owner account), login/session/lock/throttling, owner-managed delegates and permissions enforced in services, the recovery path per O-03, an audit log for auth, accounts and licensing, Persian setup/login/account screens, and the AC-02/AC-03 tests. Details: PHASE-02-PLAN.md.
+
+## 13. Review follow-up (2026-11-27)
+
+PHASE-01-REVIEW-FOLLOWUP.md records the prerequisite-gate work requested by the Phase 2 prompt:
+
+- Backup key entries are now memory-only: the interop tool had written a scratch LMK to disk.
+- Backup path, source-mutation, cleanup and entry-name hardening.
+- Windows fit the work area, and layout is verified on a 12-profile resolution × DPI matrix.
+- Screen captures are refused when another window covers the app (privacy).
+- The owner-requested 2-second splash with the OAR NOVA mark.
+- A pre-authentication architecture review for Phase 2.
+- Gates: 536/536 tests, 164/164 cross-edition, kit 24/24 on host.
+- Open: the repository is **public**; Phase 1 is not merged.
+
+The screenshots in §9 were replaced: see UI-SHELL-REPORT §3.
 
 **Stopped at the Phase 1 review gate.**
