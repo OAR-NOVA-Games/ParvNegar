@@ -60,6 +60,7 @@ namespace ParvNegar.App
 
         private void ShowMainAfterSplash(SplashWindow splash, string smokeDir, Stopwatch clock, TimeSpan visibleSince, InstallationPaths paths, UserSettings settings)
         {
+            DataFolderAcl.EnsureCreated(paths.Root, out _); // before anything is written into the data root
             _security = new SessionManager(paths, BuildTrust.Load(), new WindowsDeviceSignals(), new DpapiLocalMachineProtector(), new SystemClock(),
                 new SessionOptions { Edition = Edition, Architecture = Environment.Is64BitProcess ? "x64" : "x86", AppVersion = MainViewModel.VersionString() });
             MainWindow main = null;

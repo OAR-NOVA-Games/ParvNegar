@@ -246,6 +246,26 @@ namespace ParvNegar.App.Tests
         }
 
         [Fact]
+        public void New_data_root_gets_a_protected_acl_without_the_users_group()
+        {
+            using (var dir = new TempDir("acl"))
+            {
+                var root = System.IO.Path.Combine(dir.Path, "data-root");
+                Assert.True(ParvNegar.App.Services.DataFolderAcl.EnsureCreated(root, out var detail), detail);
+                var sec = new System.IO.DirectoryInfo(root).GetAccessControl();
+                Assert.True(sec.AreAccessRulesProtected);
+                var rules = sec.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier)).Cast<System.Security.AccessControl.FileSystemAccessRule>().ToList();
+                var users = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.BuiltinUsersSid, null);
+                var everyone = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.WorldSid, null);
+                var authUsers = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.AuthenticatedUserSid, null);
+                Assert.DoesNotContain(rules, r => r.IdentityReference.Equals(users) || r.IdentityReference.Equals(everyone) || r.IdentityReference.Equals(authUsers));
+                Assert.Contains(rules, r => r.IdentityReference.Equals(new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.LocalSystemSid, null)));
+                Assert.False(ParvNegar.App.Services.DataFolderAcl.EnsureCreated(root, out _)); // existing folders are never changed
+                System.IO.File.WriteAllText(System.IO.Path.Combine(root, "probe.txt"), "x"); // the creating account keeps access
+            }
+        }
+
+        [Fact]
         public void Layout_probe_detects_cut_off_controls()
         {
             RunSta(() =>
