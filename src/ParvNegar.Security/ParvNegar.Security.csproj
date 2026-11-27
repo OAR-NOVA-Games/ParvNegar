@@ -9,6 +9,9 @@
     <PackageReference Include="System.Security.Cryptography.ProtectedData" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="common-passwords.txt" LogicalName="ParvNegar.Security.common-passwords.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <InternalsVisibleTo Include="ParvNegar.Security.Tests" />
   </ItemGroup>
 </Project>

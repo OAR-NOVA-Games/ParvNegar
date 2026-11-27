@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Offline licensing: strict canonical JSON, ES256-P1363 signature verification, license / activation
+    request / provisioning formats and the device-binding policy. Verification only: no private keys and
+    no signing code ship in this assembly (signing lives in tools/ParvNegar.Issuer, publisher-only).
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ParvNegar.Licensing</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ParvNegar.Security\ParvNegar.Security.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParvNegar.Licensing.Tests" />
+    <InternalsVisibleTo Include="ParvNegar.Issuer" />
+  </ItemGroup>
+</Project>

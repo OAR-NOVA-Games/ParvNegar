@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParvNegar.Licensing\ParvNegar.Licensing.csproj" />
+  </ItemGroup>
+  <!-- The publisher tool is .NET 10 only; its tests run in the Modern test runs. Legacy runs use TestSigner. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <ProjectReference Include="..\..\tools\ParvNegar.Issuer\ParvNegar.Issuer.csproj" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <DefineConstants>$(DefineConstants);HAS_ISSUER</DefineConstants>
+  </PropertyGroup>
+</Project>

@@ -14,7 +14,7 @@ $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
 $env:DOTNET_NOLOGO = "1"
 $out = Join-Path $PSScriptRoot "artifacts\test-results"
 if (Test-Path $out) { Remove-Item -Recurse -Force $out }
-$projects = @("ParvNegar.Domain.Tests", "ParvNegar.Security.Tests", "ParvNegar.Storage.Tests", "ParvNegar.App.Tests")
+$projects = @("ParvNegar.Domain.Tests", "ParvNegar.Security.Tests", "ParvNegar.Storage.Tests", "ParvNegar.Licensing.Tests", "ParvNegar.App.Tests")
 $summary = New-Object System.Collections.Generic.List[string]
 $failed = 0
 

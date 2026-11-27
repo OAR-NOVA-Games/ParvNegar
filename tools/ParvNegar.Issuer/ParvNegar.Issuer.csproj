@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    PUBLISHER-ONLY license issuer (LICENSING-ARCHITECTURE.md §5). Never part of the customer application,
+    installer or compatibility kit (enforced by tools/check-issuer-isolation.ps1). It holds no master
+    password and cannot decrypt school data: it only signs licenses and provisioning artifacts.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ParvIsExecutable>true</ParvIsExecutable>
+    <RootNamespace>ParvNegar.Issuer</RootNamespace>
+    <AssemblyName>ParvNegar.Issuer</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ParvNegar.Licensing\ParvNegar.Licensing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParvNegar.Licensing.Tests" />
+  </ItemGroup>
+</Project>
