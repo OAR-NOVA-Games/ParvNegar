@@ -48,7 +48,9 @@ namespace ParvNegar.App
             {
                 try
                 {
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
                     action?.Invoke();
+                    var actionMs = sw.ElapsedMilliseconds;
                     Pump();
                     foreach (var theme in new[] { "light", "dark" })
                     {
@@ -58,7 +60,7 @@ namespace ParvNegar.App
                     }
                     ThemeManager.Apply("light");
                     var page = shell.Page;
-                    report.AppendLine("step\t" + name + "\tOK\t" + (page == null ? "home" : page.GetType().Name) + (page?.HasError == true ? "\tmessage: error shown" : ""));
+                    report.AppendLine("step\t" + name + "\tOK\t" + (page == null ? "home" : page.GetType().Name) + "\taction_ms=" + actionMs + (page?.HasError == true ? "\tmessage: error shown" : ""));
                 }
                 catch (Exception ex)
                 {
@@ -109,6 +111,8 @@ namespace ParvNegar.App
 
                 // Evidence that protected data is gone after lock.
                 report.AppendLine("after_lock_session\t" + sm.HasSession);
+                report.AppendLine("process\t" + (Environment.Is64BitProcess ? "x64" : "x86") + "\t" + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
+                report.AppendLine("peak_private_bytes\t" + SmokeRunner.PeakPrivateBytes());
                 report.AppendLine("result\t" + (failures == 0 ? "PASS" : "FAIL"));
                 File.WriteAllText(Path.Combine(dir, "ui-flow.tsv"), report.ToString(), new UTF8Encoding(false));
                 app.Shutdown(failures == 0 ? 0 : 3);

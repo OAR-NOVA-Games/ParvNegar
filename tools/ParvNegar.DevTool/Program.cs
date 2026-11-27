@@ -191,7 +191,7 @@ namespace ParvNegar.DevTool
                     Program.Expect<MalformedDataException>("BACKUP_TRUNCATED", () => RestoreBytes(work, "s3", raw.Take(raw.Length - 100).ToArray()));
                     var future = (byte[])raw.Clone(); future[6] = 0; future[7] = 9;
                     Program.Expect<UnsupportedBackupException>("BACKUP_UNSUPPORTED_FORMAT", () => RestoreBytes(work, "s4", future));
-                    Program.Expect<UnsupportedBackupException>("BACKUP_UNSUPPORTED_SCHEMA", () => BackupArchive.RestoreToStaging(arc, Program.ScratchPassphrase, Path.Combine(work, "s5"), new BackupLimits { MaxSchemaVersion = schema - 1 }));
+                    Program.Expect<UnsupportedBackupException>("BACKUP_UNSUPPORTED_SCHEMA", () => BackupArchive.RestoreToStaging(arc, Program.ScratchPassphrase, Path.Combine(work, "s5"), new BackupLimits { MaxSchemaVersion = BackupArchive.ReadHeaderInfo(arc).SchemaVersion - 1 }));
                     Program.Check("NO_STAGING_LEFT_AFTER_FAILURES", () =>
                     {
                         var left = new[] { "s1", "s2", "s3", "s4", "s5" }.Where(s => Directory.Exists(Path.Combine(work, s))).ToList();
