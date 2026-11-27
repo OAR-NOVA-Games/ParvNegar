@@ -16,11 +16,125 @@
         "resolved": "1.1.0",
         "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
       },
+      "SQLite3MC.PCLRaw.lib": {
+        "type": "Transitive",
+        "resolved": "2.7.1",
+        "contentHash": "2qAVDsPXpkjnyWed+WXpCGhL/0Jryx900B7J7ikGTWWZ5YGFGGig0JHz5N8SAB9/7Al+9hmzUU1ivAQxMIU/3A=="
+      },
+      "SQLite3MC.PCLRaw.provider": {
+        "type": "Transitive",
+        "resolved": "2.7.1",
+        "contentHash": "LPRdFKVGz4xG4X5ILmTSVeJa6CdNtHYkpj4RRC75CmZRmHnK+/EAbz94PLmO/uF5tfq7fQb5uuVfQxgScpVpvQ==",
+        "dependencies": {
+          "SQLitePCLRaw.core": "3.0.2"
+        }
+      },
+      "SQLitePCLRaw.core": {
+        "type": "Transitive",
+        "resolved": "3.0.2",
+        "contentHash": "tnbRf0muOOSJK1RLCfyYK13jynFScgL4xMj7yC3oy8lrrGKXTKmOoWjfdV+cFfBRdppm4qST31hvp8ihgIgvMQ==",
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        }
+      },
+      "System.Buffers": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "N8GXpmiLMtljq7gwvyS+1QvKT/W2J8sNAvx+HVg4NGmsG/H+2k/y9QI23auLJRterrzCiDH+IWAw4V/GPwsMlw=="
+      },
+      "System.Memory": {
+        "type": "Transitive",
+        "resolved": "4.6.3",
+        "contentHash": "qdcDOgnFZY40+Q9876JUHnlHu7bosOHX8XISRoH94fwk6hgaeQGSgfZd8srWRZNt5bV9ZW2TljcegDNxsf+96A==",
+        "dependencies": {
+          "System.Buffers": "4.6.1",
+          "System.Numerics.Vectors": "4.6.1",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
+        }
+      },
+      "System.Numerics.Vectors": {
+        "type": "Transitive",
+        "resolved": "4.6.1",
+        "contentHash": "sQxefTnhagrhoq2ReR0D/6K0zJcr9Hrd6kikeXsA1I8kOCboTavcUC4r7TSfpKFeE163uMuxZcyfO1mGO3EN8Q=="
+      },
+      "System.Runtime.CompilerServices.Unsafe": {
+        "type": "Transitive",
+        "resolved": "6.1.2",
+        "contentHash": "2hBr6zdbIBTDE3EhK7NSVNdX58uTK6iHW/P/Axmm9sl1xoGSLqDvMtpecn226TNwHByFokYwJmt/aQQNlO5CRw=="
+      },
       "parvnegar.domain": {
         "type": "Project"
+      },
+      "parvnegar.licensing": {
+        "type": "Project",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "[2.7.0, 2.7.0]",
+          "ParvNegar.Security": "[0.1.0-dev, )"
+        }
+      },
+      "parvnegar.security": {
+        "type": "Project",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "[2.7.0, 2.7.0]",
+          "System.Security.Cryptography.ProtectedData": "[10.0.0, 10.0.0]"
+        }
+      },
+      "parvnegar.storage": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Data.Sqlite.Core": "[10.0.15, 10.0.15]",
+          "ParvNegar.Security": "[0.1.0-dev, )",
+          "SQLite3MC.PCLRaw.bundle": "[2.7.1, 2.7.1]"
+        }
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "CentralTransitive",
+        "requested": "[2.7.0, 2.7.0]",
+        "resolved": "2.7.0",
+        "contentHash": "U+12df8UEWHgBi04YVf/Lgi2dy3SItlIYvHjjEVa/BngCQIzDCDRBk50DDByCfDvSbe5pRNFr3b7UrVK2kMcLw=="
+      },
+      "Microsoft.Data.Sqlite.Core": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.15, 10.0.15]",
+        "resolved": "10.0.15",
+        "contentHash": "mjDz/zleAF78J1KRN9FludN2bzbsMWoXYSLVcawADle7RBhZYpFZYivGRvbvlH/RtXT/gjO0yhG99tzdFiET+A==",
+        "dependencies": {
+          "SQLitePCLRaw.core": "2.1.13"
+        }
+      },
+      "SQLite3MC.PCLRaw.bundle": {
+        "type": "CentralTransitive",
+        "requested": "[2.7.1, 2.7.1]",
+        "resolved": "2.7.1",
+        "contentHash": "U2HdC1I4Ow/olKc3eqNTGHNS+rxHD0voa6qpD6Nl54mRkRbyRQHwFEXxbOMMEZek90CIjDaQQwThJ8vd1HqiEg==",
+        "dependencies": {
+          "SQLite3MC.PCLRaw.lib": "2.7.1",
+          "SQLite3MC.PCLRaw.provider": "2.7.1"
+        }
+      },
+      "System.Security.Cryptography.ProtectedData": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.0, 10.0.0]",
+        "resolved": "10.0.0",
+        "contentHash": "qy6C3gQRTrfhFfuiIYU1jNwWfFdJpBVo1BARW7jgMm1zTEm3LRzLLyOLJGaAuKE+nZCGkEP71y4rj9NWjqLGdQ==",
+        "dependencies": {
+          "System.Memory": "4.6.3"
+        }
       }
     },
-    ".NETStandard,Version=v2.0/win-x64": {},
-    ".NETStandard,Version=v2.0/win-x86": {}
+    ".NETStandard,Version=v2.0/win-x64": {
+      "SQLite3MC.PCLRaw.lib": {
+        "type": "Transitive",
+        "resolved": "2.7.1",
+        "contentHash": "2qAVDsPXpkjnyWed+WXpCGhL/0Jryx900B7J7ikGTWWZ5YGFGGig0JHz5N8SAB9/7Al+9hmzUU1ivAQxMIU/3A=="
+      }
+    },
+    ".NETStandard,Version=v2.0/win-x86": {
+      "SQLite3MC.PCLRaw.lib": {
+        "type": "Transitive",
+        "resolved": "2.7.1",
+        "contentHash": "2qAVDsPXpkjnyWed+WXpCGhL/0Jryx900B7J7ikGTWWZ5YGFGGig0JHz5N8SAB9/7Al+9hmzUU1ivAQxMIU/3A=="
+      }
+    }
   }
 }

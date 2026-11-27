@@ -17,5 +17,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="ParvNegar.Licensing.Tests" />
     <InternalsVisibleTo Include="ParvNegar.Issuer" />
+    <InternalsVisibleTo Include="ParvNegar.Application" />
+    <InternalsVisibleTo Include="ParvNegar.Application.Tests" />
   </ItemGroup>
 </Project>

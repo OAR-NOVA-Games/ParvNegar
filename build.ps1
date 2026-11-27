@@ -26,7 +26,7 @@ foreach ($tfm in @("net10.0-windows", "net48")) {
         foreach ($proj in @("src\ParvNegar.App\ParvNegar.App.csproj", "tools\ParvNegar.DevTool\ParvNegar.DevTool.csproj",
                             "tests\ParvNegar.Domain.Tests\ParvNegar.Domain.Tests.csproj", "tests\ParvNegar.Security.Tests\ParvNegar.Security.Tests.csproj",
                             "tests\ParvNegar.Storage.Tests\ParvNegar.Storage.Tests.csproj", "tests\ParvNegar.App.Tests\ParvNegar.App.Tests.csproj",
-                            "tests\ParvNegar.Licensing.Tests\ParvNegar.Licensing.Tests.csproj")) {
+                            "tests\ParvNegar.Licensing.Tests\ParvNegar.Licensing.Tests.csproj", "tests\ParvNegar.Application.Tests\ParvNegar.Application.Tests.csproj")) {
             & dotnet build $proj -c $Configuration -f $tfm -r $rid --no-restore -nologo -v q -m:1 -nodeReuse:false
             if ($LASTEXITCODE -ne 0) { throw "build failed: $proj $tfm $rid ($LASTEXITCODE)" }
         }

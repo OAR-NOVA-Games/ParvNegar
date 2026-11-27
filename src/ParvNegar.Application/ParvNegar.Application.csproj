@@ -1,10 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- Use cases and ports. Infrastructure (storage, rendering, preview) implements these interfaces. -->
+  <!-- Use cases and ports: licensing state, setup, authentication, sessions, authorization, recovery, audit. -->
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ParvNegar.Application</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ParvNegar.Domain\ParvNegar.Domain.csproj" />
+    <ProjectReference Include="..\ParvNegar.Licensing\ParvNegar.Licensing.csproj" />
+    <ProjectReference Include="..\ParvNegar.Storage\ParvNegar.Storage.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ParvNegar.Application.Tests" />
+    <InternalsVisibleTo Include="ParvNegar.App" />
   </ItemGroup>
 </Project>
