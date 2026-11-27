@@ -20,6 +20,9 @@ for %%E in (legacy-x86 legacy-x64 modern-x86 modern-x64) do (
     echo [%%E] isolated checks ...
     "%KIT%%%E\devtool\ParvNegar.DevTool.exe" compat "%OUT%\%%E\checks" > "%OUT%\%%E-checks.tsv" 2>&1
     echo exit=!ERRORLEVEL! >> "%OUT%\%%E-checks.tsv"
+    echo [%%E] license binding signals ^(quality and digest prefixes only, no raw hardware values^) ...
+    "%KIT%%%E\devtool\ParvNegar.DevTool.exe" license-signals x > "%OUT%\%%E-license-signals.txt" 2>&1
+    echo exit=!ERRORLEVEL! >> "%OUT%\%%E-license-signals.txt"
     echo [%%E] interop data set ...
     "%KIT%%%E\devtool\ParvNegar.DevTool.exe" interop-produce "%OUT%\%%E\interop" > "%OUT%\%%E-interop.txt" 2>&1
     echo exit=!ERRORLEVEL! >> "%OUT%\%%E-interop.txt"

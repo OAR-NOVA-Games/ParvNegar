@@ -21,6 +21,8 @@ Run
 Send back
   The folder results-<COMPUTERNAME>. It contains OS information, the hotfix list, check results,
   screenshots of the development shell and synthetic test data sets (scratch keys, no real data).
+  The license-signals files show only whether each hardware signal could be read and short hash
+  prefixes; they contain no serial numbers or other raw hardware identifiers.
   Please also note: Windows edition, RAM, screen resolution, and any error dialog you saw.
 
 The interop folders let the engineering team open data created on this machine with the other

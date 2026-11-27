@@ -1,0 +1,131 @@
+# ParvNegar selective CI (docs/phase-02/CI-STRATEGY.md)
+# - Pull requests to main and pushes to main (merges, and any direct push) are covered.
+# - tools/ci/Select-CiJobs.ps1 maps changed paths: documentation-only -> hygiene gate; anything else,
+#   including unknown paths -> full gate. "Run workflow" (workflow_dispatch) always runs the full gate.
+# - "ci-result" is the single aggregate required check: it fails unless every job that had to run passed.
+# - Superseded pull-request runs are cancelled; pushes to main are never cancelled.
+# - Standard runners only, explicit timeouts, locked restore, NuGet cache keyed by the lock files.
+# - GitHub-hosted Windows runners do NOT qualify Windows 7, 8.1 or 10; only the compatibility kit on real machines does.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.decide.outputs.full }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Trigger-mapping self-test
+        shell: pwsh
+        run: ./tools/ci/Test-CiMapping.ps1
+      - name: Decide gates
+        id: decide
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") { ./tools/ci/Select-CiJobs.ps1 -ForceFull; exit }
+          $base = "${{ github.event.pull_request.base.sha || github.event.before }}"
+          if (-not $base -or $base -match '^0+$') { ./tools/ci/Select-CiJobs.ps1 -ForceFull; exit }
+          ./tools/ci/Select-CiJobs.ps1 -Base $base -Head "${{ github.sha }}"
+
+  hygiene:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repository hygiene and secret scan
+        shell: powershell
+        run: ./tools/check-repo-hygiene.ps1
+      - name: Issuer and trust-anchor isolation (sources)
+        shell: powershell
+        run: ./tools/check-issuer-isolation.ps1
+
+  full-gate:
+    needs: classify
+    if: needs.classify.outputs.full == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/packages.lock.json"
+      - name: .NET 10 x86 runtimes (for the x86 test processes)
+        shell: powershell
+        run: |
+          Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile "$env:RUNNER_TEMP\dotnet-install.ps1"
+          $dir = "C:\Program Files (x86)\dotnet"
+          & "$env:RUNNER_TEMP\dotnet-install.ps1" -Channel 10.0 -Runtime dotnet -Architecture x86 -InstallDir $dir
+          & "$env:RUNNER_TEMP\dotnet-install.ps1" -Channel 10.0 -Runtime windowsdesktop -Architecture x86 -InstallDir $dir
+      - name: Build (locked restore, 4 combinations)
+        shell: powershell
+        run: ./build.ps1 -LockedRestore
+      - name: Tests (4 combinations, real process architecture asserted)
+        shell: powershell
+        run: ./test.ps1 -NoBuild
+      - name: Publisher issuer (for the cross-edition license checks)
+        shell: powershell
+        run: dotnet build tools/ParvNegar.Issuer/ParvNegar.Issuer.csproj -c Release --no-restore -nologo
+      - name: Cross-edition interoperability (storage, backup, licensing)
+        shell: powershell
+        run: ./tools/Run-CrossEdition.ps1
+      - name: Issuer isolation (with build outputs)
+        shell: powershell
+        run: ./tools/check-issuer-isolation.ps1
+      - name: Dependency vulnerability audit
+        shell: powershell
+        run: |
+          $o = dotnet list ParvNegar.sln package --vulnerable --include-transitive 2>&1 | Out-String
+          Write-Host $o
+          if ($o -match "has the following vulnerable packages") { exit 1 }
+      - name: Native import analysis
+        shell: powershell
+        run: python tools/check-native-imports.py src/ParvNegar.App/bin/Release tools/ParvNegar.DevTool/bin/Release
+      - name: Test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+          retention-days: 7
+
+  ci-result:
+    needs: [classify, hygiene, full-gate]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Aggregate required check
+        shell: bash
+        run: |
+          echo "classify=${{ needs.classify.result }} full=${{ needs.classify.outputs.full }} hygiene=${{ needs.hygiene.result }} full-gate=${{ needs.full-gate.result }}"
+          [ "${{ needs.classify.result }}" = "success" ] || exit 1
+          [ "${{ needs.hygiene.result }}" = "success" ] || exit 1
+          if [ "${{ needs.classify.outputs.full }}" = "true" ]; then
+            [ "${{ needs.full-gate.result }}" = "success" ] || exit 1
+          else
+            [ "${{ needs.full-gate.result }}" = "skipped" ] || exit 1
+          fi
