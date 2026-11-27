@@ -55,8 +55,18 @@ namespace ParvNegar.App
                     foreach (var theme in new[] { "light", "dark" })
                     {
                         ThemeManager.Apply(theme);
+                        if (target == null) Reposition(main);
                         Pump();
-                        SmokeRunner.CaptureWindow(target ?? main, Path.Combine(dir, "flow", name + "-" + theme + ".png"));
+                        var file = Path.Combine(dir, "flow", name + "-" + theme + ".png");
+                        try { SmokeRunner.CaptureWindow(target ?? main, file); }
+                        catch (InvalidOperationException first)
+                        {
+                            // One retry after putting the window back; the privacy guard itself is unchanged.
+                            report.AppendLine("retry	" + name + "-" + theme + "	" + first.Message);
+                            if (target == null) Reposition(main);
+                            Pump();
+                            SmokeRunner.CaptureWindow(target ?? main, file);
+                        }
                     }
                     ThemeManager.Apply("light");
                     var page = shell.Page;
@@ -117,6 +127,17 @@ namespace ParvNegar.App
                 File.WriteAllText(Path.Combine(dir, "ui-flow.tsv"), report.ToString(), new UTF8Encoding(false));
                 app.Shutdown(failures == 0 ? 0 : 3);
             }));
+        }
+
+        /// <summary>Keeps the window inside the work area (another program or the user may have moved it).</summary>
+        private static void Reposition(Window w)
+        {
+            w.WindowState = WindowState.Normal;
+            WindowFit.ClampToWorkArea(w);
+            var wa = SystemParameters.WorkArea;
+            w.Left = wa.Left + 10; w.Top = wa.Top + 10;
+            if (w.Left + w.ActualWidth > wa.Right) w.Left = Math.Max(wa.Left, wa.Right - w.ActualWidth);
+            if (w.Top + w.ActualHeight > wa.Bottom) w.Top = Math.Max(wa.Top, wa.Bottom - w.ActualHeight);
         }
 
         private static void Pump()
