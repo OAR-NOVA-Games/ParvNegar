@@ -17,11 +17,13 @@ namespace ParvNegar.App
         private InstanceGuard _instance;
         private SessionMonitor _monitor;
         private SessionManager _security;
+        private string[] _args = new string[0];
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             var smokeDir = SmokeRunner.ParseSmokeArgument(e.Args);
+            _args = e.Args;
 
             // One running instance per PC (two processes must never initialise or modify the same data).
             // Smoke runs use their own synthetic data root and their own instance name.
@@ -68,7 +70,9 @@ namespace ParvNegar.App
             main = new MainWindow(vm);
             MainWindow = main; // ShutdownMode=OnMainWindowClose: from here on, closing the splash never ends the app.
             _monitor = new SessionMonitor(_security, Dispatcher);
-            if (smokeDir != null) SmokeRunner.Attach(this, main, vm, smokeDir);
+            if (smokeDir != null && SmokeFlow.IsPrepare(_args)) { splash.Close(); Shutdown(SmokeFlow.Prepare(_security, smokeDir)); return; }
+            if (smokeDir != null && SmokeFlow.IsFlow(_args)) SmokeFlow.Run(this, main, vm, smokeDir);
+            else if (smokeDir != null) SmokeRunner.Attach(this, main, vm, smokeDir);
 
             var timer = new DispatcherTimer(DispatcherPriority.Normal) { Interval = TimeSpan.FromMilliseconds(15) };
             timer.Tick += (s, a) =>

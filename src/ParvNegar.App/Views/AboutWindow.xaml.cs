@@ -10,6 +10,7 @@ namespace ParvNegar.App.Views
             InitializeComponent();
             DataContext = viewModel;
             WindowFit.ClampToWorkArea(this);
+            ParvNegar.App.Services.ThemeManager.ApplyChrome(this);
             Loaded += (s, e) => CloseButton.Focus();
         }
 

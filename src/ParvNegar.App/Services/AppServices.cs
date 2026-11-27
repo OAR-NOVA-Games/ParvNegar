@@ -76,8 +76,30 @@ namespace ParvNegar.App.Services
             if (old != null) dicts[dicts.IndexOf(old)] = fresh;
             else dicts.Insert(0, fresh);
             Current = theme;
+            foreach (Window w in System.Windows.Application.Current.Windows) ApplyChrome(w);
             ThemeChanged?.Invoke(null, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Dark title bar via DWMWA_USE_IMMERSIVE_DARK_MODE (attribute 20; 19 on Windows 10 1809–1909).
+        /// Windows 7 and 8.1 have no such attribute: the call fails harmlessly and the title bar stays standard.
+        /// </summary>
+        public static void ApplyChrome(Window w)
+        {
+            var hwnd = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+            if (hwnd == IntPtr.Zero) { w.SourceInitialized -= OnSourceInitialized; w.SourceInitialized += OnSourceInitialized; return; }
+            try
+            {
+                int on = IsDark ? 1 : 0;
+                if (DwmSetWindowAttribute(hwnd, 20, ref on, 4) != 0) DwmSetWindowAttribute(hwnd, 19, ref on, 4);
+            }
+            catch (Exception ex) when (ex is DllNotFoundException || ex is EntryPointNotFoundException) { }
+        }
+
+        private static void OnSourceInitialized(object sender, EventArgs e) => ApplyChrome((Window)sender);
+
+        [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
     }
 
     /// <summary>One running ParvNegar per Windows installation (all Windows sessions on the PC).</summary>

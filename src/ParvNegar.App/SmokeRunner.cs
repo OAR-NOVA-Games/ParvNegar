@@ -155,6 +155,8 @@ namespace ParvNegar.App
         /// Captures the real window (frame, title bar, icon and client) from the screen, so the image shows
         /// what the user sees. RenderTargetBitmap is not used: it renders RTL content mirrored.
         /// </summary>
+        internal static void CaptureWindow(Window w, string path) => Capture(w, path);
+
         private static void Capture(Window w, string path)
         {
             w.Topmost = true;
@@ -164,6 +166,8 @@ namespace ParvNegar.App
             // Visible frame without the invisible resize borders (DWM, Vista+); fall back to the window rect.
             if (DwmGetWindowAttribute(hwnd, 9 /* DWMWA_EXTENDED_FRAME_BOUNDS */, out var r, Marshal.SizeOf(typeof(Rect32))) != 0)
                 GetWindowRect(hwnd, out r);
+            // Inset by 2 px: the 1-px DWM border and rounded corners can show what lies behind the window.
+            r.Left += 2; r.Top += 2; r.Right -= 2; r.Bottom -= 2;
             int width = r.Right - r.Left, height = r.Bottom - r.Top;
             // Privacy guard: the capture copies screen pixels, so another application's window on top would be
             // recorded. Every point of a 9x9 grid inside the rectangle must belong to this window, else refuse.
