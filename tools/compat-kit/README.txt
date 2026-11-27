@@ -1,4 +1,4 @@
-ParvNegar Phase 1 compatibility kit (internal engineering build - NOT for customers)
+ParvNegar Phase 1 compatibility kit (follow-up build) (internal engineering build - NOT for customers)
 
 What it contains
   legacy-x86, legacy-x64   .NET Framework 4.8 builds (Windows 7 SP1, 8.1, 10, 11)
@@ -12,7 +12,11 @@ Before running
   No administrator rights and no internet connection are needed.
 
 Run
-  Double-click RUN-COMPAT.cmd. A ParvNegar window opens and closes by itself for each build.
+  Double-click RUN-COMPAT.cmd. For each build the OAR NOVA splash appears for 2 seconds, then a
+  ParvNegar window opens, resizes itself several times and closes by itself.
+  Close or minimize other windows first and do not use the computer while it runs: screenshots are
+  copied from the screen, so the shell refuses to save one when another window covers it
+  (the result then shows a capture failure instead of a picture of your other windows).
 
 Send back
   The folder results-<COMPUTERNAME>. It contains OS information, the hotfix list, check results,

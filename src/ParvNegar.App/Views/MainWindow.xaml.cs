@@ -9,6 +9,7 @@ namespace ParvNegar.App.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            WindowFit.ClampToWorkArea(this);
             viewModel.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(MainViewModel.IsHome))

@@ -9,6 +9,8 @@
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource Brush.Background}" FontFamily="{StaticResource Font.Ui}"
         UseLayoutRounding="True">
+    <!-- Scrolls when the work area is shorter than the content (e.g. 1366x768 at 150% DPI). -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
     <Border Style="{StaticResource Card}" Margin="16">
         <StackPanel>
             <Image Source="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon-256.png" Width="88" Height="88"
@@ -39,4 +41,5 @@
                     Content="{x:Static vm:Strings.Close}" IsCancel="True" IsDefault="True" Click="OnClose" AutomationProperties.AutomationId="CloseAbout" />
         </StackPanel>
     </Border>
+    </ScrollViewer>
 </Window>

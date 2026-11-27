@@ -1,0 +1,26 @@
+<Window x:Class="ParvNegar.App.Views.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ParvNegar.App.ViewModels"
+        Title="{x:Static vm:Strings.WindowTitle}"
+        Icon="pack://application:,,,/ParvNegar;component/Assets/Brand/ParvNegar-AppIcon.ico"
+        FlowDirection="RightToLeft" Language="fa-IR"
+        Width="420" Height="420"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True" Topmost="False"
+        Background="{DynamicResource Brush.Primary}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        AutomationProperties.Name="OAR NOVA Games Studio">
+    <!-- Startup splash: owner-supplied white publisher mark on brand navy (assets/publisher/README.md). -->
+    <Grid>
+        <Image x:Name="PublisherMark" Width="320" Height="320" Stretch="Uniform"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               RenderOptions.BitmapScalingMode="HighQuality"
+               AutomationProperties.Name="OAR NOVA Games Studio">
+            <Image.Source>
+                <BitmapImage UriSource="pack://application:,,,/ParvNegar;component/Assets/Publisher/OAR-NOVA-Games-Logo-White.png"
+                             DecodePixelWidth="640" CacheOption="OnLoad" />
+            </Image.Source>
+        </Image>
+    </Grid>
+</Window>

@@ -8,6 +8,7 @@
     <RootNamespace>ParvNegar.App</RootNamespace>
     <AssemblyName>ParvNegar</AssemblyName>
     <BrandKitDir>$(MSBuildThisFileDirectory)..\..\assets\brand-kit\</BrandKitDir>
+    <PublisherAssetsDir>$(MSBuildThisFileDirectory)..\..\assets\publisher\</PublisherAssetsDir>
     <ApplicationIcon>$(BrandKitDir)01-App-Icon\ICO\ParvNegar-AppIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyTitle>ParvNegar</AssemblyTitle>
@@ -28,6 +29,7 @@
     <Resource Include="$(BrandKitDir)01-App-Icon\ICO\ParvNegar-AppIcon.ico" Link="Assets\Brand\ParvNegar-AppIcon.ico" />
     <Resource Include="$(BrandKitDir)01-App-Icon\PNG\ParvNegar-AppIcon-256.png" Link="Assets\Brand\ParvNegar-AppIcon-256.png" />
     <Resource Include="$(BrandKitDir)02-Logos\PNG\ParvNegar-Logo-Horizontal-Transparent.png" Link="Assets\Brand\ParvNegar-Logo-Horizontal-Transparent.png" />
+    <Resource Include="$(PublisherAssetsDir)OAR-NOVA-Games-Logo-White.png" Link="Assets\Publisher\OAR-NOVA-Games-Logo-White.png" />
     <None Include="Assets\Fonts\OFL.txt" CopyToOutputDirectory="PreserveNewest" Link="licenses\Vazirmatn-OFL.txt" />
     <None Include="Config\school-profile.xml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

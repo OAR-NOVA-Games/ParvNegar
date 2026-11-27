@@ -9,6 +9,7 @@ namespace ParvNegar.App.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            WindowFit.ClampToWorkArea(this);
             Loaded += (s, e) => CloseButton.Focus();
         }
 

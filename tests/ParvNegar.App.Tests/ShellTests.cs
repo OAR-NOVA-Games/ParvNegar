@@ -176,6 +176,93 @@ namespace ParvNegar.App.Tests
             Assert.DoesNotContain(loaded, n => n.IndexOf("Skia", StringComparison.OrdinalIgnoreCase) >= 0 || n.IndexOf("QuestPDF", StringComparison.OrdinalIgnoreCase) >= 0 || n.IndexOf("PDFium", StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
+        [Fact]
+        public void Every_display_profile_keeps_all_controls_reachable_without_overlap()
+        {
+            // 1024x768, 1366x768, 1920x1080 at 100/125/150/200% as DIP work areas (WPF lays out in DIP).
+            RunSta(() =>
+            {
+                var w = Build(new SchoolProfile(Guid.NewGuid(), "مدرسه آزمایشی با نام نسبتاً طولانی برای بررسی شکستن خط", ApprovedTitle, null), out var vm);
+                try
+                {
+                    var failures = new System.Collections.Generic.List<string>();
+                    foreach (var profile in DisplayProfile.Matrix())
+                    {
+                        var sim = profile.WorkAreaDip;
+                        w.MaxWidth = double.PositiveInfinity; w.MaxHeight = double.PositiveInfinity; w.MinWidth = 800; w.MinHeight = 600;
+                        WindowFit.ClampTo(w, sim);
+                        w.Width = sim.Width; w.Height = sim.Height;
+                        Assert.True(w.MinWidth <= sim.Width && w.MinHeight <= sim.Height, "minimum size exceeds the work area: " + profile.Name);
+                        foreach (var home in new[] { true, false })
+                        {
+                            if (home) vm.BackCommand.Execute(null); else vm.StartCommand.Execute(null);
+                            w.UpdateLayout();
+                            foreach (var p in LayoutProbe.CheckMain(w)) failures.Add(profile.Name + (home ? " home: " : " start: ") + p);
+                        }
+                    }
+                    Assert.Empty(failures);
+                }
+                finally { w.Close(); }
+            });
+        }
+
+        [Fact]
+        public void Layout_probe_detects_cut_off_controls()
+        {
+            RunSta(() =>
+            {
+                var w = Build(new SchoolProfile(Guid.NewGuid(), "x", ApprovedTitle, null), out _);
+                try
+                {
+                    w.MinWidth = 0; w.Width = 600;
+                    w.StartButton.MinWidth = 2000;
+                    w.UpdateLayout();
+                    Assert.Contains(LayoutProbe.CheckMain(w), p => p.StartsWith("Start cut horizontally", StringComparison.Ordinal));
+                }
+                finally { w.Close(); }
+            });
+        }
+
+        [Fact]
+        public void Window_fit_never_exceeds_the_work_area()
+        {
+            RunSta(() =>
+            {
+                var w = new Window { Width = 1100, Height = 720, MinWidth = 800, MinHeight = 600 };
+                WindowFit.ClampTo(w, new Rect(0, 0, 819, 566));
+                Assert.Equal(819, w.Width); Assert.Equal(566, w.Height);
+                Assert.Equal(819, w.MaxWidth); Assert.Equal(566, w.MaxHeight);
+                Assert.Equal(800, w.MinWidth); Assert.Equal(566, w.MinHeight);
+                var small = new Window { Width = 400, Height = 300 };
+                WindowFit.ClampTo(small, new Rect(0, 0, 1536, 816));
+                Assert.Equal(400, small.Width); Assert.Equal(300, small.Height);
+            });
+        }
+
+        [Fact]
+        public void Splash_shows_the_unmodified_publisher_mark_for_two_seconds()
+        {
+            Assert.Equal(TimeSpan.FromSeconds(2), SplashWindow.MinimumDuration);
+            RunSta(() =>
+            {
+                var s = new SplashWindow();
+                Assert.Equal(WindowStyle.None, s.WindowStyle);
+                Assert.Equal(FlowDirection.RightToLeft, s.FlowDirection);
+                var img = (System.Windows.Controls.Image)s.FindName("PublisherMark");
+                Assert.NotNull(img.Source);
+                Assert.Equal("OAR NOVA Games Studio", System.Windows.Automation.AutomationProperties.GetName(img));
+                s.Close();
+
+                // The embedded resource is byte-identical to assets/publisher (no recolor or redraw in the build).
+                var info = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/ParvNegar;component/Assets/Publisher/OAR-NOVA-Games-Logo-White.png"));
+                Assert.NotNull(info);
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                using (var st = info.Stream)
+                    Assert.Equal("75b843bf8d0d2a4f14b142e34aa5b12ba50e736f041ad06f659e4834eddcc8bb",
+                                 string.Concat(sha.ComputeHash(st).Select(b => b.ToString("x2", System.Globalization.CultureInfo.InvariantCulture))));
+            });
+        }
+
         private static System.Collections.Generic.IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
