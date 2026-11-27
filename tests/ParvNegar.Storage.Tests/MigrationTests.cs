@@ -30,6 +30,39 @@ namespace ParvNegar.Storage.Tests
         }
 
         [Fact]
+        public void Existing_schema_1_database_with_data_upgrades_to_schema_2_and_keeps_its_data()
+        {
+            var key = CryptoRandom.Bytes(32);
+            using (var d = new TempDir("mig12"))
+            {
+                var all = MigrationRunner.Embedded();
+                Assert.True(all.Count >= 2);
+                Fixtures.Ids ids;
+                string before;
+                using (var c = EncryptedDatabase.Create(d.File("a.db"), key))
+                {
+                    Assert.Equal(1, MigrationRunner.Migrate(c, all.Take(1).ToList())); // a Phase 1 installation
+                    Fixtures.SeedMinimal(c, out ids);
+                    before = EncryptedDatabase.Scalar(c, "SELECT group_concat(id || full_name || national_id) FROM student;");
+                    Assert.Equal("0", EncryptedDatabase.Scalar(c, "SELECT count(*) FROM sqlite_master WHERE name='account';"));
+                    EncryptedDatabase.Checkpoint(c);
+                }
+                SqliteConnection.ClearAllPools();
+                using (var c = EncryptedDatabase.Open(d.File("a.db"), key)) // opened by Phase 2 code
+                {
+                    Assert.Equal(all.Count - 1, MigrationRunner.Migrate(c, all));
+                    Assert.Equal(all.Count, MigrationRunner.CurrentVersion(c));
+                    Assert.Equal(before, EncryptedDatabase.Scalar(c, "SELECT group_concat(id || full_name || national_id) FROM student;"));
+                    foreach (var t in new[] { "installation_info", "account", "account_permission", "audit_event", "audit_state" })
+                        Assert.Equal("1", EncryptedDatabase.Scalar(c, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + t + "';"));
+                    Assert.Equal("ok", EncryptedDatabase.Scalar(c, "PRAGMA integrity_check;"));
+                    Assert.Equal("0", EncryptedDatabase.Scalar(c, "SELECT count(*) FROM pragma_foreign_key_check;"));
+                }
+                SqliteConnection.ClearAllPools();
+            }
+        }
+
+        [Fact]
         public void Failed_migration_rolls_back_completely()
         {
             using (var d = new TempDir("mig"))

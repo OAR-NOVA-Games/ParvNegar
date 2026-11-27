@@ -5,7 +5,7 @@ Agents implement; the owner decides. These rules apply to every session in this 
 ## Work rules
 
 1. Work phase by phase. Start a phase only after the owner approves its scope. Stop at each review gate.
-2. Read the SRS (`docs/requirements/ParvNegar-SRS-v1.0.md`), the latest phase report and `docs/phase-01/DECISION-REGISTER.md` before changing code.
+2. Read the SRS (`docs/requirements/ParvNegar-SRS-v1.0.md`), the latest phase report and the decision registers (`docs/phase-01/`, `docs/phase-02/DECISION-REGISTER.md`) before changing code.
 3. Never treat an Open or Proposed item as approved. Record new owner decisions in the decision register with their date.
 4. English for code, comments, docs, commits and PRs. Persian RTL for every customer-facing string (keep them in `Strings`).
 5. Commit messages: one conventional subject line (`feat: ...`, `fix: ...`, `test: ...`, `docs: ...`, `chore: ...`).
@@ -17,13 +17,17 @@ Agents implement; the owner decides. These rules apply to every session in this 
 - Never commit, log, upload or paste real student data, the source archive, sample Word files, real exports, databases, backups, keys or secrets.
 - Fixtures are synthetic. National IDs in tests must come from `Fixtures.InvalidCheckDigitNationalId` (they fail the check digit, so they cannot be real).
 - The school home title is configuration and must stay byte-identical to SRS §1.
-- Run `tools/check-repo-hygiene.ps1` before every commit.
+- Run `tools/check-repo-hygiene.ps1` and `tools/check-issuer-isolation.ps1` before every commit.
+- Never commit signing keys (`*.pnsk`), the `.local/` folder, bootstrap codes or recovery keys. Development keys live only in `.local/`; test keys are created inside test runs.
+- Never add a production trust anchor or generate a production key without the owner-approved ceremony (`docs/phase-02/SIGNING-KEY-CUSTODY.md`).
 
 ## Engineering gates
 
 - Build and test all four combinations (net10/net48 × x64/x86) with `build.ps1` and `test.ps1`. Tests assert the real process architecture.
 - Run `tools/Run-CrossEdition.ps1` after any change to storage, crypto or backup formats.
-- Any format change needs a version bump, a migration or reader rule, and an update to `docs/phase-01/STORAGE-FORMAT.md`.
+- Any format change needs a version bump, a migration or reader rule, and an update to `docs/phase-01/STORAGE-FORMAT.md` or `docs/phase-02/LICENSE-FORMAT.md` / `STORAGE-CONTRACT-CHANGES.md`.
+- Protected operations go through `SessionManager.Run` (authorization in services, never only in the UI).
+- Windows PowerShell 5.1 reads BOM-less UTF-8 as ANSI: never rewrite Persian or UTF-8 files with `Get-Content`/`Set-Content`.
 - No new cryptographic algorithm or construction. Use the primitives in `ParvNegar.Security`.
 - No PDF/preview native dependency may become required at application startup.
 - Never report Windows 7/8.1/10 as PASS without runtime evidence from that OS. WOW64 on Windows 11 does not qualify a 32-bit OS.

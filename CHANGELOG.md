@@ -2,7 +2,22 @@
 
 All notable changes. Versions follow Semantic Versioning once releases begin. No release has been published.
 
-## [Unreleased] — Phase 1 (feat/phase-01)
+## [Unreleased] — Phase 2 (feat/phase-02)
+
+### Added
+- Offline licensing: strict canonical JSON, ES256-P1363 signed licenses and owner provisioning files, activation requests, 2-of-3 hardware binding (SMBIOS UUID, system-disk serial, MachineGuid), build-profile trust anchors.
+- Publisher-only issuer tool (`tools/ParvNegar.Issuer`): encrypted signing-key files, issuance, reissue, provisioning, verification, privacy-minimized records.
+- First-run owner provisioning with a separately delivered bootstrap code; crash-safe staged setup.
+- Authentication: PNKE v2 envelopes bound to envelope id, revision and username; database-authoritative account checks; password policy (15–128, NFC, blocklist); persistent progressive throttling.
+- Sessions: state machine, 15-minute inactivity lock, Windows lock/switch/suspend locks, single instance, protected operations re-authorized in the transaction.
+- Owner and delegated-administrator accounts with deny-by-default permissions; last-owner protection.
+- Owner recovery key with confirmation and rotation; recovery with device re-binding after a Windows reinstall.
+- Security audit log (HMAC chain, bounded) and pre-unlock journal; schema 2 migration.
+- Persian RTL screens for licensing, setup, recovery key, login/lock, password change, recovery, accounts, permissions, security, settings; Light and Dark themes; school logos and publisher mark.
+- Protected ACL for a newly created data folder.
+- Selective GitHub Actions CI with tested path mapping; issuer isolation gate; Light/Dark UI evidence flow; licensing checks in the cross-edition matrix and the compatibility kit.
+
+## Phase 1 (merged into main, 853dc56)
 
 ### Added
 - Solution foundation: central package management with exact versions and lock files, SDK pin, sequential build and test scripts for net10.0-windows/net48 × x64/x86.
